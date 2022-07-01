@@ -3,8 +3,9 @@ Program that converts a csv file from Napari to a 3D Numpy array.
 '''
 
 import pandas as pd
+# import numpy as np
 
-filename = 'example_neurons.csv'
+filename = 'example_neurons.csv' # relative filepath
 df = pd.read_csv(filename,usecols= ['axis-0','axis-1','axis-2'])
 df.columns = ['Z','X','Y']
 df = df[['X','Y','Z']]
