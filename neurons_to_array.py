@@ -14,22 +14,26 @@ def toArray(filename):
     df = df.to_numpy()
     return df
 
-def plot(arr):
+def plot(arr, plotColor):
     fig = plt.figure()
-    ax = plt.axes(projection='3d')
-    
-    ax.scatter3D(arr[:,0],arr[:,1],arr[:,2],color='blue')
+    ax = fig.add_subplot(projection='3d')
 
-    plt.title("Zebrafish brain neurons")
+    ax.scatter3D(arr[:,0],arr[:,1],arr[:,2],s=20,color=plotColor)
+
+    ax.set_title("Zebrafish brain neurons", fontweight = 'bold')
     ax.set_xlabel('X-axis', fontweight = 'bold')
     ax.set_ylabel('Y-axis', fontweight = 'bold')
-    ax.set_zlabel('Z-axis', fontweight = 'bold')
+    ax.set_zlabel('Z-axis (slice)', fontweight = 'bold')
+    # rename file window
+    # figure out what napari is used for and if it can streamline this
+    # enable zooming/resize window appropriately
+
 
     plt.show()
 
 def main():
     arr1 = toArray("example_neurons.csv")
-    plot(arr1)
+    plot(arr1,'blue')
 
 if __name__ == "__main__":
     main()
