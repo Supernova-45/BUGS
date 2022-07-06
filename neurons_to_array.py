@@ -4,6 +4,7 @@ Program that converts a csv file from Napari to a 3D Numpy array.
 
 import pandas as pd
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 
@@ -29,20 +30,35 @@ def plot(arr, plotColor, labelName):
     plt.legend(loc="upper right")
     plt.show()
 
-def compare(seg1filename, seg2filename):
+def compare(seg1filename, seg2filename, tolerance):
     seg1, seg2 = toArray(seg1filename), toArray(seg2filename)
-    arr1 = [[] for i in range(int(min(seg1[0][2],seg2[0][2])), int(max(seg1[-1][2], seg2[-1][2]))+1)]
-    arr2 = [[] for i in range(int(min(seg1[0][2],seg2[0][2])), int(max(seg1[-1][2], seg2[-1][2]))+1)]
+    # arr1 and arr2 are 3D arrays where arr[n] = nth slice, arr[n][k] = kth coordinate pair
+    # arr3 contains overlapping neurons
+    # assumption is that imaging starts at slice 0
+    slices = int(max(seg1[-1][2], seg2[-1][2]))
+    arr1, arr2, arr3 = [[] for i in range(slices+1)], [[] for i in range(slices+1)], [[] for i in range(slices+1)]
+
     for coord in seg1:
-        print(coord[2])
         arr1[int(coord[2])].append([coord[0],coord[1]])
     for coord in seg2:
         arr2[int(coord[2])].append([coord[0],coord[1]])
+    
+    # O(n^3) brute force method
+    for t in range(slices+1):
+        for coord1 in arr1[t]:
+            closest = tolerance
+            for coord2 in arr2[t]:
+                # determine which point in arr2 is closest to coord1 in arr1
+                if math.dist([coord1[0], coord1[1]], [coord2[0], coord2[1]]) < closest:
+                    closest = math.dist([coord1[0], coord1[1]], [coord2[0], coord2[1]])
+            if closest != tolerance:
+                arr3[t].append([(coord1[0]+coord2[0])*0.5, (coord1[1]+coord2[1])*0.5]) # average
+    
+    return arr3
 
 def main():
     arr1 = toArray("seg1_points.csv")
-    print(arr1)
-    print(compare("seg1_points.csv","seg2_points.csv"))
+    print(compare("seg1_points.csv","seg2_points.csv", 2))
 
 if __name__ == "__main__":
     main()
