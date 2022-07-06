@@ -1,5 +1,5 @@
 '''
-Program that converts a csv file from Napari to a 3D Numpy array.
+Program that compares data annotations and converts a Napari csv file to and from a 3D Numpy array.
 '''
 
 import pandas as pd
@@ -14,6 +14,19 @@ def toArray(filename):
     df = df[['X','Y','Z']]
     df = df.to_numpy()
     return df
+
+def toCSV(arr, filename):
+    # changes xyz array back to napari csv format
+    newArr = []
+    for slice in range(len(arr)):
+        for coord in arr[slice]:
+            newArr.append([float(slice),coord[0],coord[1]])
+
+    df = pd.DataFrame(newArr)
+    df = df.reset_index()
+    df.columns = ['index','axis-0','axis-1','axis-2']
+    
+    df.to_csv(filename, sep=',',index=None)
 
 def plot(arr, plotColor, labelName):
     fig = plt.figure()
@@ -36,7 +49,7 @@ def compare(seg1filename, seg2filename, tolerance):
     # arr3 contains overlapping neurons
     # assumption is that imaging starts at slice 0
     slices = int(max(seg1[-1][2], seg2[-1][2]))
-    arr1, arr2, arr3 = [[] for i in range(slices+1)], [[] for i in range(slices+1)], [[] for i in range(slices+1)]
+    arr1, arr2, overlap = [[] for i in range(slices+1)], [[] for i in range(slices+1)], [[] for i in range(slices+1)]
 
     for coord in seg1:
         arr1[int(coord[2])].append([coord[0],coord[1]])
@@ -52,13 +65,14 @@ def compare(seg1filename, seg2filename, tolerance):
                 if math.dist([coord1[0], coord1[1]], [coord2[0], coord2[1]]) < closest:
                     closest = math.dist([coord1[0], coord1[1]], [coord2[0], coord2[1]])
             if closest != tolerance:
-                arr3[t].append([(coord1[0]+coord2[0])*0.5, (coord1[1]+coord2[1])*0.5]) # average
+                overlap[t].append([(coord1[0]+coord2[0])*0.5, (coord1[1]+coord2[1])*0.5]) # average
     
-    return arr3
+    return overlap
 
 def main():
     arr1 = toArray("seg1_points.csv")
-    print(compare("seg1_points.csv","seg2_points.csv", 2))
+    overlap = compare("seg1_points.csv","seg2_points.csv", 2)
+    toCSV(overlap,"overlap_points.csv")
 
 if __name__ == "__main__":
     main()
