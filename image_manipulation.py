@@ -22,14 +22,14 @@ class imageManipulation:
     def writeFile(self, filename):
         tif.imwrite(filename, self.im, photometric='minisblack')
 
-    def standardDeviation(self, arr):
-        return np.std(arr,axis=0,dtype='float32')
+    def standardDeviation(self):
+        return np.std(self.im,axis=0,dtype='float32')
         
-    def mean(self, arr):
-        return np.mean(arr,axis=0,dtype='float32')
+    def mean(self):
+        return np.mean(self.im,axis=0,dtype='float32')
 
-    def median(self, arr):
-        return np.median(arr,axis=0,dtype='float32')
+    def median(self):
+        return np.median(self.im,axis=0,dtype='float32')
 
-    def variance(self, arr):
-        return np.var(arr,axis=0,dtype='float32')
+    def variance(self):
+        return np.var(self.im,axis=0,dtype='float32')
