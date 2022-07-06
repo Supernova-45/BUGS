@@ -5,13 +5,9 @@ Reads and writes TIF files in addition to performing statistical manipulations o
 import tifffile as tif
 import numpy as np
 
-class imageManipulation:
+class arrayManipulation:
 
-    # from file constructor
-    def __init__(self, filename):
-        self.im = tif.imread(filename)
-
-    # from numpy array constructor
+    # numpy array constructor
     def __init__(self, arr):
         self.im = arr
 
@@ -33,3 +29,9 @@ class imageManipulation:
 
     def variance(self):
         return np.var(self.im,axis=0,dtype='float32')
+
+class imageManipulation(arrayManipulation):
+
+    # file constructor
+    def __init__(self, filename):
+        self.im = tif.imread(filename)
