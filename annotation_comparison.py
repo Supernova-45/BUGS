@@ -70,7 +70,6 @@ def compare(seg1filename, seg2filename, tolerance):
     return overlap
 
 def main():
-    arr1 = toArray("seg1_points.csv")
     overlap = compare("seg1_points.csv","seg2_points.csv", 2)
     toCSV(overlap,"overlap_points.csv")
 

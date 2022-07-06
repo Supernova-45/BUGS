@@ -19,8 +19,8 @@ class imageManipulation:
         return self.im
 
     # statistical functions
-    def writeFile(self, arr, filename):
-        tif.imwrite(filename, arr, photometric='minisblack')
+    def writeFile(self, filename):
+        tif.imwrite(filename, self.im, photometric='minisblack')
 
     def standardDeviation(self, arr):
         return np.std(arr,axis=0,dtype='float32')
@@ -33,5 +33,3 @@ class imageManipulation:
 
     def variance(self, arr):
         return np.var(arr,axis=0,dtype='float32')
-
-    # need to add more
