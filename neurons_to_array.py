@@ -29,9 +29,20 @@ def plot(arr, plotColor, labelName):
     plt.legend(loc="upper right")
     plt.show()
 
+def compare(seg1filename, seg2filename):
+    seg1, seg2 = toArray(seg1filename), toArray(seg2filename)
+    arr1 = [[] for i in range(int(min(seg1[0][2],seg2[0][2])), int(max(seg1[-1][2], seg2[-1][2]))+1)]
+    arr2 = [[] for i in range(int(min(seg1[0][2],seg2[0][2])), int(max(seg1[-1][2], seg2[-1][2]))+1)]
+    for coord in seg1:
+        print(coord[2])
+        arr1[int(coord[2])].append([coord[0],coord[1]])
+    for coord in seg2:
+        arr2[int(coord[2])].append([coord[0],coord[1]])
+
 def main():
-    arr1 = toArray("example_neurons.csv")
-    plot(arr1,'blue','test')
+    arr1 = toArray("seg1_points.csv")
+    print(arr1)
+    print(compare("seg1_points.csv","seg2_points.csv"))
 
 if __name__ == "__main__":
     main()
