@@ -32,6 +32,6 @@ class arrayManipulation:
 
 class imageManipulation(arrayManipulation):
 
-    # file constructor
+    # constructor from TIF which inherits the array
     def __init__(self, filename):
         self.im = tif.imread(filename)
