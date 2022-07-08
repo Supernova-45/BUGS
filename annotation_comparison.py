@@ -40,7 +40,6 @@ def toCSV(arr, filename):
     
     df.to_csv(filename, sep=',',index=None)
 
-
 def plot(arr, plotColor, labelName):
     """
     Plots a 3D array of data points in Matplotlib
@@ -126,32 +125,6 @@ def segBrightness(arr, filename):
     Input: 3D NumPy array (points clicked), TIFF file; Output: Float (average brightness)
     """
     pass
-
-def bruteForceCompare(seg1filename, seg2filename, tolerance):
-    seg1, seg2 = napariToArray(seg1filename), napariToArray(seg2filename)
-    # arr1 and arr2 are 3D arrays where arr[n] = nth slice, arr[n][k] = kth coordinate pair
-    # arr3 contains overlapping neurons
-    # assumption is that imaging starts at slice 0
-    slices = int(max(seg1[-1][2], seg2[-1][2])) + 1
-    arr1, arr2, overlap = [[] for i in range(slices)], [[] for i in range(slices)], [[] for i in range(slices)]
-
-    for coord in seg1:
-        arr1[int(coord[2])].append([coord[0],coord[1]])
-    for coord in seg2:
-        arr2[int(coord[2])].append([coord[0],coord[1]])
-    
-    # O(n^3) brute force method
-    for t in range(slices):
-        for coord1 in arr1[t]:
-            closest = tolerance
-            for coord2 in arr2[t]:
-                # determine which point in arr2 is closest to coord1 in arr1
-                if math.dist([coord1[0], coord1[1]], [coord2[0], coord2[1]]) < closest:
-                    closest = math.dist([coord1[0], coord1[1]], [coord2[0], coord2[1]])
-            if closest != tolerance:
-                overlap[t].append([(coord1[0]+coord2[0])*0.5, (coord1[1]+coord2[1])*0.5]) # average
-    
-    return overlap
 
 def main():
     pass
