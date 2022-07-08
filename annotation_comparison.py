@@ -26,8 +26,8 @@ def fijiToArray(filename):
 
 def toCSV(arr, filename):
     """
-    Changes 3D XYZ array of points into Napari CSV format
-    Input: NumPy array, name of output file; Output: CSV file called "filename"
+    Turns 3D XYZ array of points into Napari CSV format
+    Input: NumPy array, String (name of output file); Output: CSV file called "filename"
     """
     newArr = []
     for slice in range(len(arr)):
@@ -43,7 +43,7 @@ def toCSV(arr, filename):
 
 def plot(arr, plotColor, labelName):
     """
-    Plots a 3D array of datapoints in Matplotlib
+    Plots a 3D array of data points in Matplotlib
     Inputs: 3D array, color of the points, label to add to the legend
     """
     fig = plt.figure()
@@ -60,10 +60,10 @@ def plot(arr, plotColor, labelName):
     plt.legend(loc="upper right")
     plt.show()
 
-def getOverlap(arr1, arr2):
+def getOverlap(arr1, arr2, tolerance):
     """
     Computes the points selected by two segmenters by calculating nearest neighbors within a certain tolerance
-    Inputs: two 3D arrays (x, y, slice)
+    Inputs: two 3D arrays (x, y, slice), tolerance
     Output: a 1D array with length of arr1.len()
     Code adapted from X___
     """
@@ -74,6 +74,7 @@ def overlapSize(arr):
     Finds the number of non -1 points from a 1D array
     Input: 1D array from getOverlap(); Output: int
     """
+    pass
 
 def percentMatched(arr1, arr2):
     """
@@ -89,10 +90,14 @@ def percentMisMatched(arr1, arr2):
     """
     pass
 
-def manySegmenters(*args):
+def threeSegs(arr1, arr2, arr3):
     """
-    Returns an array of points clicked by 3+ segmenters
+    Returns percent of points clicked by combinations of the 3 segmenters
+    Input: 3 segmenters' arrays; Output: 2D array [1&2&3, [1, 1&2, 1&3], [2, 2&1, 2&3], [3, 3&1, 3&2]]
     """
+    pass
+
+def manySegs(*args):
     pass
 
 def tiffToArray(filename):
@@ -104,14 +109,14 @@ def tiffToArray(filename):
 
 def shrinkGrid(arr, n, x, y, z):
     """
-    Input: 3D NumPy array from TIFF file; Output: n x n portion of the grid centered at (x,y,z)
+    Input: 3D NumPy array from TIFF file; Output: n x n array -- portion of the grid centered at (x,y,z)
     """
     pass
 
 def neuronBrightness(arr):
     """
-    Determine the local brightness of a neuron 
-    Input: Numpy array representing small portion of TIFF file; Output: Float 
+    Determine the local brightness of a neuron by averaging pixels around it
+    Input: Numpy array from shrinkGrid(); Output: Float 
     """
     pass
 
@@ -149,9 +154,7 @@ def bruteForceCompare(seg1filename, seg2filename, tolerance):
     return overlap
 
 def main():
-    # overlap = bruteForceCompare("seg1_points.csv","seg2_points.csv", 2)
-    # toCSV(overlap,"overlap_points.csv")
-    overlap = partitionCompare("seg1_points.csv","seg2_points.csv", 200, 2)
+    pass
 
 if __name__ == "__main__":
     main()
