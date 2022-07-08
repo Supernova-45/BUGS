@@ -40,6 +40,7 @@ def toCSV(arr, filename):
     
     df.to_csv(filename, sep=',',index=None)
 
+
 def plot(arr, plotColor, labelName):
     """
     Plots a 3D array of datapoints in Matplotlib
@@ -83,13 +84,20 @@ def percentMatched(arr1, arr2):
 
 def percentMisMatched(arr1, arr2):
     """
-    Computes the percent of points that only one segmenter clicked
+    Computes the percent of points which only one segmenter clicked
     Input: Output: [float, float], or [seg1 % mismatched, seg2 % mismatched]
+    """
+    pass
+
+def manySegmenters(*args):
+    """
+    Returns an array of points clicked by 3+ segmenters
     """
     pass
 
 def tiffToArray(filename):
     """
+    Utilizes imageManipulation class
     Input: TIFF file; Output: NumPy array
     """
     pass
@@ -100,14 +108,14 @@ def shrinkGrid(arr, n, x, y, z):
     """
     pass
 
-def getBrightness(arr):
+def neuronBrightness(arr):
     """
     Determine the local brightness of a neuron 
     Input: Numpy array representing small portion of TIFF file; Output: Float 
     """
     pass
 
-def whichPoints(arr, filename):
+def segBrightness(arr, filename):
     """
     Returns the brightness of neurons the segmenter clicked
     Input: 3D NumPy array (points clicked), TIFF file; Output: Float (average brightness)
@@ -115,7 +123,7 @@ def whichPoints(arr, filename):
     pass
 
 def bruteForceCompare(seg1filename, seg2filename, tolerance):
-    seg1, seg2 = toArray(seg1filename), toArray(seg2filename)
+    seg1, seg2 = napariToArray(seg1filename), napariToArray(seg2filename)
     # arr1 and arr2 are 3D arrays where arr[n] = nth slice, arr[n][k] = kth coordinate pair
     # arr3 contains overlapping neurons
     # assumption is that imaging starts at slice 0
