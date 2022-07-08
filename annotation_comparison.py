@@ -59,6 +59,61 @@ def plot(arr, plotColor, labelName):
     plt.legend(loc="upper right")
     plt.show()
 
+def getOverlap(arr1, arr2):
+    """
+    Computes the points selected by two segmenters by calculating nearest neighbors within a certain tolerance
+    Inputs: two 3D arrays (x, y, slice)
+    Output: a 1D array with length of arr1.len()
+    Code adapted from X___
+    """
+    pass
+
+def overlapSize(arr): 
+    """
+    Finds the number of non -1 points from a 1D array
+    Input: 1D array from getOverlap(); Output: int
+    """
+
+def percentMatched(arr1, arr2):
+    """
+    Computes the percent of points clicked by 2 segmenters
+    Input: two 3D NumPy arrays; Output: Float between 0 and 1
+    """
+    pass
+
+def percentMisMatched(arr1, arr2):
+    """
+    Computes the percent of points that only one segmenter clicked
+    Input: Output: [float, float], or [seg1 % mismatched, seg2 % mismatched]
+    """
+    pass
+
+def tiffToArray(filename):
+    """
+    Input: TIFF file; Output: NumPy array
+    """
+    pass
+
+def shrinkGrid(arr, n, x, y, z):
+    """
+    Input: 3D NumPy array from TIFF file; Output: n x n portion of the grid centered at (x,y,z)
+    """
+    pass
+
+def getBrightness(arr):
+    """
+    Determine the local brightness of a neuron 
+    Input: Numpy array representing small portion of TIFF file; Output: Float 
+    """
+    pass
+
+def whichPoints(arr, filename):
+    """
+    Returns the brightness of neurons the segmenter clicked
+    Input: 3D NumPy array (points clicked), TIFF file; Output: Float (average brightness)
+    """
+    pass
+
 def bruteForceCompare(seg1filename, seg2filename, tolerance):
     seg1, seg2 = toArray(seg1filename), toArray(seg2filename)
     # arr1 and arr2 are 3D arrays where arr[n] = nth slice, arr[n][k] = kth coordinate pair
@@ -84,7 +139,6 @@ def bruteForceCompare(seg1filename, seg2filename, tolerance):
                 overlap[t].append([(coord1[0]+coord2[0])*0.5, (coord1[1]+coord2[1])*0.5]) # average
     
     return overlap
-
 
 def main():
     # overlap = bruteForceCompare("seg1_points.csv","seg2_points.csv", 2)
