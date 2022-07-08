@@ -1,5 +1,5 @@
 '''
-Program that compares data annotations and converts a Napari csv file to and from a 3D Numpy array.
+Program that compares segmenters' data annotations from a Napari/Fiji CSV file.
 '''
 
 import pandas as pd
@@ -9,18 +9,25 @@ import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 from scipy.spatial import KDTree
 
-def toArray(filename):
+def napariToArray(filename):
     """
-    Inputs csv file and outputs Numpy array
+    Input: Napari CSV file; Output: NumPy array
     """
     df = pd.read_csv(filename,usecols= ['axis-0','axis-1','axis-2'])
     df.columns = ['Z','X','Y']
     df = df[['X','Y','Z']]
     return df.to_numpy()
 
+def fijiToArray(filename):
+    """
+    Input: Fiji CSV file; Output: NumPy array
+    """
+    pass
+
 def toCSV(arr, filename):
     """
-    Changes xyz array back to napari csv format
+    Changes 3D XYZ array of points into Napari CSV format
+    Input: NumPy array, name of output file; Output: CSV file called "filename"
     """
     newArr = []
     for slice in range(len(arr)):
@@ -34,6 +41,10 @@ def toCSV(arr, filename):
     df.to_csv(filename, sep=',',index=None)
 
 def plot(arr, plotColor, labelName):
+    """
+    Plots a 3D array of datapoints in Matplotlib
+    Inputs: 3D array, color of the points, label to add to the legend
+    """
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
 
@@ -74,43 +85,6 @@ def bruteForceCompare(seg1filename, seg2filename, tolerance):
     
     return overlap
 
-KDTree.spatial_distance_matrix
-
-def slidingCompare():
-    # sort coordinates by sum
-    # sorted(coordinates, key = lambda x: sum(x))
-    # sliding window technique?
-    pass
-
-def treeCompare():
-
-
-
-def partitionCompare(seg1filename, seg2filename, fileDimension, tolerance):
-    # place points in arr1 in array, save location of points in the array in another array "arr1loc"
-    seg1, seg2 = toArray(seg1filename), toArray(seg2filename)
-    # arr1 and arr2 are 3D arrays where arr[n] = nth slice, arr[n][k] = kth coordinate pair
-    # arr3 contains overlapping neurons
-    # assumption is that imaging starts at slice 0
-    slices = int(max(seg1[-1][2], seg2[-1][2])) + 1
-    arr1, arr2, overlap = [[] for i in range(slices)], [[] for i in range(slices)], [[] for i in range(slices)]
-
-    # grid partitioned into tolerance x tolerance squares
-    grid = [[[[[] for i in range(2)] for col in range(fileDimension // tolerance + 1)] for row in range(fileDimension // tolerance + 1)] for i in range(slices)]
-    # need to convert to numpy arrays
-
-    for coord in seg1:
-        arr1[int(coord[2])].append([coord[0],coord[1]])
-    for coord in seg2:
-        arr2[int(coord[2])].append([coord[0],coord[1]])
-    
-    # O(n^3) brute force method
-    for t in range(slices):
-        pass
-    # place points in arr2 in array
-    # go through each point in arr1loc
-    # test all the arr2 points in the 9 boxes and see which one is the closest if any
-    return arr1
 
 def main():
     # overlap = bruteForceCompare("seg1_points.csv","seg2_points.csv", 2)
