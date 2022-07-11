@@ -136,8 +136,8 @@ def manySegs(*args):
     pass
 
 def main():
-    # seg1 = napari_to_array("seg1_points.csv")
-    # seg2 = napari_to_array("seg2_points.csv")
+    # seg1 = napari_to_array("data/seg1_points.csv")
+    # seg2 = napari_to_array("data/seg2_points.csv")
     # print(two_segs(seg1, seg2, 2, "1", "2"))
 
     suhan = fiji_to_array("/Users/alexandrakim/Desktop/BUGS2022/suhan_7_9_2022.csv")
