@@ -14,7 +14,7 @@ def napari_to_array(filename):
     Input: Napari CSV file; Output: NumPy array
     """
     df = pd.read_csv(filename,usecols= ['axis-0','axis-1','axis-2'])
-    df.columns = ['Z','X','Y']
+    df.columns = ['Z','Y','X']
     df = df[['X','Y','Z']]
     return df.to_numpy()
 
@@ -23,33 +23,39 @@ def fiji_to_array(filename):
     Input: Fiji CSV file; Output: NumPy array
     """
     df = pd.read_csv(filename,usecols= ['X','Y','Slice'])
+    df['Slice'] -= 1 # calibrate because fiji slices start at 1; napari starts at 0
+    # convert to pixels
+    df['X'] /= 1.17
+    df['Y'] /= 1.17
     return df.to_numpy()
 
-def to_csv(arr, filename):
+def to_napari_csv(arr, filename):
     """
-    Turns 3D XYZ array of points into Napari CSV format
+    Turns 2D XYZ array of points into Napari CSV format
     Input: NumPy array, String (name of output file); Output: CSV file called "filename"
     """
     newArr = []
-    for slice in range(len(arr)):
-        for coord in arr[slice]:
-            newArr.append([float(slice),coord[0],coord[1]])
+    # for slice in range(len(arr)):
+        # for coord in arr[slice]:
+            # newArr.append([float(slice),coord[0],coord[1]])
 
-    df = pd.DataFrame(newArr)
+    df = pd.DataFrame(arr)
     df = df.reset_index()
-    df.columns = ['index','axis-0','axis-1','axis-2']
-    
+    df.columns = ['index','axis-1','axis-2','axis-0']
+    df = df[['index','axis-0','axis-1','axis-2']]
+
     df.to_csv(filename, sep=',',index=None)
 
-def plot(arr, plotColor, labelName):
+def plot(arr):
     """
     Plots a 3D array of data points in Matplotlib
-    Inputs: 3D array, color of the points, label to add to the legend
+    Inputs: A 2D array; each entry is [arr, plotColor, labelName] 
     """
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
 
-    ax.scatter3D(arr[:,0],arr[:,1],arr[:,2],s=20,label=labelName,color=plotColor)
+    for info in arr:
+        ax.scatter3D(info[0][:,0],info[0][:,1],info[0][:,2],s=20,color=info[1],label=info[2])
 
     fig.canvas.set_window_title('Ok3')
     ax.set_title("Zebrafish brain neurons", fontweight = 'bold')
@@ -59,7 +65,31 @@ def plot(arr, plotColor, labelName):
 
     plt.legend(loc="upper right")
     plt.show()
-    
+
+def plotThree(arr1, plotColor1, labelName1, arr2, plotColor2, labelName2, arr3, plotColor3, labelName3):
+    """
+    Plots a 3D array of data points in Matplotlib
+    Inputs: 3D array, color of the points, label to add to the legend
+    """
+    fig = plt.figure()
+    ax = fig.add_subplot(projection='3d')
+
+    ax.scatter3D(arr1[:,0],arr1[:,1],arr1[:,2],s=20,label=labelName1,color=plotColor1)
+    ax.scatter3D(arr2[:,0],arr2[:,1],arr2[:,2],s=20,label=labelName2,color=plotColor2)
+    ax.scatter3D(arr3[:,0],arr3[:,1],arr3[:,2],s=20,label=labelName3,color=plotColor3)
+
+    fig.canvas.set_window_title('Ok3')
+    ax.set_title("Zebrafish brain neurons", fontweight = 'bold')
+    ax.set_xlabel('X-axis', fontweight = 'bold')
+    ax.set_ylabel('Y-axis', fontweight = 'bold')
+    ax.set_zlabel('Z-axis (slice)', fontweight = 'bold')
+
+    plt.legend(loc="upper right")
+
+    manager = plt.get_current_fig_manager()
+    manager.full_screen_toggle()
+    plt.show()
+
 def nearest_pairs(v1, v2, radius):
     """
     Adopted from synspy: https://github.com/informatics-isi-edu/synspy.git
@@ -111,7 +141,7 @@ def percent_matched(arr1, arr2, radius):
     matched = overlap_size(closestOne) / (len(arr1) + len(arr2))
     mismatched1 = (len(arr1) - overlap_size(closestOne)) / (len(arr1) + len(arr2))
     mismatched2 = (len(arr2) - overlap_size(closestOne)) / (len(arr1) + len(arr2))
-    return matched*100, mismatched1*100, mismatched2*100
+    return round(matched*100,4), round(mismatched1*100,4), round(mismatched2*100,4)
 
 def two_segs(arr1, arr2, radius, nameOne, nameTwo):
     """
@@ -140,11 +170,19 @@ def main():
     # seg2 = napari_to_array("data/seg2_points.csv")
     # print(two_segs(seg1, seg2, 2, "1", "2"))
 
-    suhan = fiji_to_array("data/suhan_7_9_2022.csv")
-    lindsey = np.concatenate((napari_to_array("data/lindsey_sn_7_9_2022.csv"), napari_to_array("data/lindsey_mn_7_9_2022.csv")), axis=0)
-    alex = napari_to_array("data/alex_7_9_2022.csv")
+    # suhan = fiji_to_array("data/suhan_7_9_2022.csv")
+    # lindsey = np.concatenate((napari_to_array("data/lindsey_sn_7_9_2022.csv"), napari_to_array("data/lindsey_mn_7_9_2022.csv")), axis=0)
+    # alex = napari_to_array("data/alex_7_9_2022.csv")
 
-    print(three_segs(alex, lindsey, suhan, 4))
+    # plotThree(suhan, 'red', 'suhan',lindsey, 'green', 'lindsey',alex, 'blue', 'alex')
+    fiji = fiji_to_array("/Users/alexandrakim/Desktop/BUGS2022/fiji_two_points.csv")
+    print(fiji)
+    napari = napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/napari_two_points.csv")
+    print(napari)
+
+    # to_napari_csv(fiji, "data/output_points.csv")
+    plot([[fiji, 'red', 'fiji'],[napari, 'green','napari']])
+    # print(three_segs(alex, lindsey, suhan, 4))
 
 if __name__ == "__main__":
     main()
