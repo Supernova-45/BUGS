@@ -144,5 +144,7 @@ def main():
     lindsey = np.concatenate((napari_to_array("data/lindsey_sn_7_9_2022.csv"), napari_to_array("data/lindsey_mn_7_9_2022.csv")), axis=0)
     alex = napari_to_array("data/alex_7_9_2022.csv")
 
+    print(three_segs(alex, lindsey, suhan, 4))
+
 if __name__ == "__main__":
     main()
