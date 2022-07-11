@@ -125,33 +125,6 @@ def three_segs(arr1, arr2, arr3):
 def manySegs(*args):
     pass
 
-def tiffToArray(filename):
-    """
-    Utilizes imageManipulation class
-    Input: TIFF file; Output: NumPy array
-    """
-    pass
-
-def shrinkGrid(arr, n, x, y, z):
-    """
-    Input: 3D NumPy array from TIFF file; Output: n x n array -- portion of the grid centered at (x,y,z)
-    """
-    pass
-
-def neuronBrightness(arr):
-    """
-    Determine the local brightness of a neuron by averaging pixels around it
-    Input: Numpy array from shrinkGrid(); Output: Float 
-    """
-    pass
-
-def segBrightness(arr, filename):
-    """
-    Returns the brightness of neurons the segmenter clicked
-    Input: 3D NumPy array (points clicked), TIFF file; Output: Float (average brightness)
-    """
-    pass
-
 def main():
     pass
 
