@@ -7,9 +7,9 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
-from scipy.spatial import KDTree
+from scipy.spatial import cKDTree
 
-def napariToArray(filename):
+def napari_to_array(filename):
     """
     Input: Napari CSV file; Output: NumPy array
     """
@@ -18,13 +18,13 @@ def napariToArray(filename):
     df = df[['X','Y','Z']]
     return df.to_numpy()
 
-def fijiToArray(filename):
+def fiji_to_array(filename):
     """
     Input: Fiji CSV file; Output: NumPy array
     """
     pass
 
-def toCSV(arr, filename):
+def to_csv(arr, filename):
     """
     Turns 3D XYZ array of points into Napari CSV format
     Input: NumPy array, String (name of output file); Output: CSV file called "filename"
@@ -58,38 +58,64 @@ def plot(arr, plotColor, labelName):
 
     plt.legend(loc="upper right")
     plt.show()
-
-def getOverlap(arr1, arr2, tolerance):
+    
+def nearest_pairs(v1, v2, radius):
     """
-    Computes the points selected by two segmenters by calculating nearest neighbors within a certain tolerance
-    Inputs: two 3D arrays (x, y, slice), tolerance
-    Output: a 1D array with length of arr1.len()
-    Code adapted from X___
-    """
-    pass
+    Adopted from synspy: https://github.com/informatics-isi-edu/synspy.git
+    Find nearest k-dimensional point pairs between v1 and v2 and return via output arrays.
 
-def overlapSize(arr): 
+       Inputs:
+         v1: array with first pointcloud with shape (n, k)
+         kdt1: must be cKDTree(v1) for correct function
+         v2: array with second pointcloud with shape (m, k)
+         radius: maximum euclidean distance between points in a pair
+
+       Use greedy algorithm to assign nearest neighbors without
+       duplication of any point in more than one pair.
+
+       Outputs:
+         out1: for each point in kdt1, gives index of paired point from v2 or -1
+         iv1_for_v2: out2: for each point in v2, gives index of paired point from v1 or -1
+
+    """
+    depth = min(max(v1.shape[0], v2.shape[0]), 100)
+
+    out1 = np.full((v1.shape[0], 1), -1)
+    out2 = np.full((v2.shape[0], 1), -1)
+
+    kdt1 = cKDTree(v1)
+    dx, pairs = kdt1.query(v2, depth, distance_upper_bound=radius)
+    for d in range(depth):
+        for idx2 in np.argsort(dx[:, d]):
+            if dx[idx2, d] < radius:
+                if out2[idx2] == -1 and out1[pairs[idx2, d]] == -1:
+                    out2[idx2] = pairs[idx2, d]
+                    out1[pairs[idx2, d]] = idx2
+    iv1_for_v2 = out2
+    return out1, iv1_for_v2
+
+def overlap_size(arr): 
     """
     Finds the number of non -1 points from a 1D array
     Input: 1D array from getOverlap(); Output: int
     """
     pass
 
-def percentMatched(arr1, arr2):
+def percent_matched(arr1, arr2):
     """
     Computes the percent of points clicked by 2 segmenters
     Input: two 3D NumPy arrays; Output: Float between 0 and 1
     """
     pass
 
-def percentMisMatched(arr1, arr2):
+def percent_mismatched(arr1, arr2):
     """
     Computes the percent of points which only one segmenter clicked
     Input: Output: [float, float], or [seg1 % mismatched, seg2 % mismatched]
     """
     pass
 
-def threeSegs(arr1, arr2, arr3):
+def three_segs(arr1, arr2, arr3):
     """
     Returns percent of points clicked by combinations of the 3 segmenters
     Input: 3 segmenters' arrays; Output: 2D array [1&2&3, [1, 1&2, 1&3], [2, 2&1, 2&3], [3, 3&1, 3&2]]
