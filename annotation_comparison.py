@@ -18,15 +18,15 @@ def napari_to_array(filename):
     df = df[['X','Y','Z']]
     return df.to_numpy()
 
-def fiji_to_array(filename):
+def fiji_to_array(filename, conversion):
     """
-    Input: Fiji CSV file; Output: NumPy array
+    Input: Fiji CSV file, pixels per micrometer; Output: NumPy array
     """
     df = pd.read_csv(filename,usecols= ['X','Y','Slice'])
     df['Slice'] -= 1 # calibrate because fiji slices start at 1; napari starts at 0
     # convert to pixels
-    df['X'] /= 1.17
-    df['Y'] /= 1.17
+    df['X'] /= conversion
+    df['Y'] /= conversion
     return df.to_numpy()
 
 def to_napari_csv(arr, filename):
@@ -64,30 +64,6 @@ def plot(arr):
     ax.set_zlabel('Z-axis (slice)', fontweight = 'bold')
 
     plt.legend(loc="upper right")
-    plt.show()
-
-def plotThree(arr1, plotColor1, labelName1, arr2, plotColor2, labelName2, arr3, plotColor3, labelName3):
-    """
-    Plots a 3D array of data points in Matplotlib
-    Inputs: 3D array, color of the points, label to add to the legend
-    """
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-
-    ax.scatter3D(arr1[:,0],arr1[:,1],arr1[:,2],s=20,label=labelName1,color=plotColor1)
-    ax.scatter3D(arr2[:,0],arr2[:,1],arr2[:,2],s=20,label=labelName2,color=plotColor2)
-    ax.scatter3D(arr3[:,0],arr3[:,1],arr3[:,2],s=20,label=labelName3,color=plotColor3)
-
-    fig.canvas.set_window_title('Ok3')
-    ax.set_title("Zebrafish brain neurons", fontweight = 'bold')
-    ax.set_xlabel('X-axis', fontweight = 'bold')
-    ax.set_ylabel('Y-axis', fontweight = 'bold')
-    ax.set_zlabel('Z-axis (slice)', fontweight = 'bold')
-
-    plt.legend(loc="upper right")
-
-    manager = plt.get_current_fig_manager()
-    manager.full_screen_toggle()
     plt.show()
 
 def nearest_pairs(v1, v2, radius):
@@ -170,19 +146,20 @@ def main():
     # seg2 = napari_to_array("data/seg2_points.csv")
     # print(two_segs(seg1, seg2, 2, "1", "2"))
 
-    # suhan = fiji_to_array("data/suhan_7_9_2022.csv")
-    # lindsey = np.concatenate((napari_to_array("data/lindsey_sn_7_9_2022.csv"), napari_to_array("data/lindsey_mn_7_9_2022.csv")), axis=0)
-    # alex = napari_to_array("data/alex_7_9_2022.csv")
+    suhan = fiji_to_array("data/suhan_7_9_2022.csv",1.7)
+    lindsey = np.concatenate((napari_to_array("data/lindsey_sn_7_9_2022.csv"), napari_to_array("data/lindsey_mn_7_9_2022.csv")), axis=0)
+    alex = napari_to_array("data/alex_7_9_2022.csv")
+
+    # plot([[suhan, 'red', 'suhan'],[lindsey, 'green', 'lindsey'],[alex, 'blue', 'alex']])
+
+    print(three_segs(alex, lindsey, suhan, 4))
 
     # plotThree(suhan, 'red', 'suhan',lindsey, 'green', 'lindsey',alex, 'blue', 'alex')
-    fiji = fiji_to_array("/Users/alexandrakim/Desktop/BUGS2022/fiji_two_points.csv")
-    print(fiji)
-    napari = napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/napari_two_points.csv")
-    print(napari)
+    # fiji = fiji_to_array("/Users/alexandrakim/Desktop/BUGS2022/fiji_two_points.csv")
+    # napari = napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/napari_two_points.csv")
 
     # to_napari_csv(fiji, "data/output_points.csv")
-    plot([[fiji, 'red', 'fiji'],[napari, 'green','napari']])
-    # print(three_segs(alex, lindsey, suhan, 4))
+    # plot([[fiji, 'red', 'fiji'],[napari, 'green','napari']])
 
 if __name__ == "__main__":
     main()
