@@ -99,7 +99,7 @@ def overlap_size(arr):
     Finds the number of non -1 points from a 1D array
     Input: 1D array from getOverlap(); Output: int
     """
-    return len(arr) - arr.count(-1)
+    return len(arr) - np.count_zero(arr == -1)
 
 def percent_matched(arr1, arr2, radius):
     """
@@ -119,12 +119,18 @@ def percent_mismatched(arr1, arr2, radius):
     """
     pass
 
-def three_segs(arr1, arr2, arr3):
+def three_segs(arr1, arr2, arr3, radius):
     """
     Returns percent of points clicked by combinations of the 3 segmenters
-    Input: 3 segmenters' arrays; Output: 2D array [1&2&3, [1, 1&2, 1&3], [2, 2&1, 2&3], [3, 3&1, 3&2]]
+    Input: 3 segmenters' arrays and tolerance; Output: 2D array [1&2&3, [1, 1&2, 1&3], [2, 2&1, 2&3], [3, 3&1, 3&2]]
     """
-    pass
+    msg = ""
+    matched12, mismatched12, mismatched21 = percent_matched(arr1, arr2, radius)
+    msg += f"Seg1 and seg2 overlapped by {matched12} percent, with {mismatched12} percent mismatched by seg1 and {mismatched21} percent mismatched by seg2. \n"
+    matched13, mismatched13, mismatched31 = percent_matched(arr1, arr3, radius)
+    msg += f"Seg1 and seg3 overlapped by {matched13} percent, with {mismatched13} percent mismatched by seg1 and {mismatched31} percent mismatched by seg3. \n"
+    matched23, mismatched23, mismatched32 = percent_matched(arr2, arr3, radius)
+    msg += f"Seg2 and seg3 overlapped by {matched23} percent, with {mismatched23} percent mismatched by seg2 and {mismatched32} percent mismatched by seg3."
 
 def manySegs(*args):
     pass
