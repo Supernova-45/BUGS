@@ -7,7 +7,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
-# from scipy.spatial import cKDTree
+from scipy.spatial import cKDTree
 
 def napari_to_array(filename):
     """
