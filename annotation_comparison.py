@@ -99,19 +99,23 @@ def overlap_size(arr):
     Finds the number of non -1 points from a 1D array
     Input: 1D array from getOverlap(); Output: int
     """
-    pass
+    return len(arr) - arr.count(-1)
 
-def percent_matched(arr1, arr2):
+def percent_matched(arr1, arr2, radius):
     """
-    Computes the percent of points clicked by 2 segmenters
+    Computes the percent of points clicked by 2 segmenters and the percent of points which only one segmenter clicked
     Input: two 3D NumPy arrays; Output: Float between 0 and 1
     """
-    pass
+    closestOne, closestTwo = nearest_pairs(arr1, arr2, radius)
+    matched = overlap_size(closestOne) / (len(arr1) + len(arr2))
+    mismatched1 = (len(arr1) - overlap_size(closestOne)) / (len(arr1) + len(arr2))
+    mismatched2 = (len(arr2) - overlap_size(closestOne)) / (len(arr1) + len(arr2))
+    return matched, mismatched1, mismatched2
 
-def percent_mismatched(arr1, arr2):
+def percent_mismatched(arr1, arr2, radius):
     """
     Computes the percent of points which only one segmenter clicked
-    Input: Output: [float, float], or [seg1 % mismatched, seg2 % mismatched]
+    Input: Output: float, float -- seg1 % mismatched, seg2 % mismatched
     """
     pass
 
@@ -126,7 +130,10 @@ def manySegs(*args):
     pass
 
 def main():
-    pass
+    seg1 = napari_to_array("seg1_points.csv")
+    seg2 = napari_to_array("seg2_points.csv")
+    oneOverlap, twoOverlap = nearest_pairs(seg1, seg2, 2)
+    print(oneOverlap)
 
 if __name__ == "__main__":
     main()
