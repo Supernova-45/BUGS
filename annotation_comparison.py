@@ -113,14 +113,14 @@ def percent_matched(arr1, arr2, radius):
     mismatched2 = (len(arr2) - overlap_size(closestOne)) / (len(arr1) + len(arr2))
     return matched*100, mismatched1*100, mismatched2*100
 
-def two_segs(arr1, arr2, radius, one, two):
+def two_segs(arr1, arr2, radius, nameOne, nameTwo):
     """
     Returns information about the points clicked by two segmenters
     Input: Numpy arrays from two segmenters, tolerance threshold, name of two segmenters (String)
     Output: String
     """
     matched12, mismatched12, mismatched21 = percent_matched(arr1, arr2, radius)
-    msg = f"Seg {one} and seg {two} overlapped by {matched12} percent, with {mismatched12} percent mismatched by seg {one} and {mismatched21} percent mismatched by seg {two}.\n"
+    msg = f"Seg {nameOne} and seg {nameTwo} overlapped by {matched12} percent, with {mismatched12} percent mismatched by seg {nameOne} and {mismatched21} percent mismatched by seg {nameTwo}.\n"
     return msg
 
 def three_segs(arr1, arr2, arr3, radius):
@@ -132,7 +132,7 @@ def three_segs(arr1, arr2, arr3, radius):
     msg = two_segs(arr1, arr2, radius, "1", "2") + two_segs(arr1, arr3, radius, "1", "3") + two_segs(arr2, arr3, radius, "2", "3")
     return msg
 
-def manySegs(*args):
+def many_segs(*args):
     pass
 
 def main():
@@ -140,9 +140,9 @@ def main():
     # seg2 = napari_to_array("data/seg2_points.csv")
     # print(two_segs(seg1, seg2, 2, "1", "2"))
 
-    suhan = fiji_to_array("/Users/alexandrakim/Desktop/BUGS2022/suhan_7_9_2022.csv")
-    lindsey = np.concatenate(napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/lindsey_sn_7_9_2022.csv"),napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/lindsey_mn_7_9_2022.csv"), axis=0)
-    alex = napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/7_5_2022_left_forebrain_1P.csv")
+    suhan = fiji_to_array("data/suhan_7_9_2022.csv")
+    lindsey = np.concatenate((napari_to_array("data/lindsey_sn_7_9_2022.csv"), napari_to_array("data/lindsey_mn_7_9_2022.csv")), axis=0)
+    alex = napari_to_array("data/alex_7_9_2022.csv")
 
 if __name__ == "__main__":
     main()
