@@ -99,18 +99,18 @@ def overlap_size(arr):
     Finds the number of non -1 points from a 1D array
     Input: 1D array from getOverlap(); Output: int
     """
-    return len(arr) - np.count_zero(arr == -1)
+    return len(arr) - np.count_nonzero(arr == -1)
 
 def percent_matched(arr1, arr2, radius):
     """
     Computes the percent of points clicked by 2 segmenters and the percent of points which only one segmenter clicked
-    Input: two 3D NumPy arrays; Output: Float between 0 and 1
+    Input: two 3D NumPy arrays; Output: Float between 0 and 100
     """
     closestOne, closestTwo = nearest_pairs(arr1, arr2, radius)
     matched = overlap_size(closestOne) / (len(arr1) + len(arr2))
     mismatched1 = (len(arr1) - overlap_size(closestOne)) / (len(arr1) + len(arr2))
     mismatched2 = (len(arr2) - overlap_size(closestOne)) / (len(arr1) + len(arr2))
-    return matched, mismatched1, mismatched2
+    return matched*100, mismatched1*100, mismatched2*100
 
 def percent_mismatched(arr1, arr2, radius):
     """
@@ -119,18 +119,18 @@ def percent_mismatched(arr1, arr2, radius):
     """
     pass
 
+def two_segs(arr1, arr2, radius, one, two):
+    matched12, mismatched12, mismatched21 = percent_matched(arr1, arr2, radius)
+    msg = f"Seg {one} and seg {two} overlapped by {matched12} percent, with {mismatched12} percent mismatched by seg {one} and {mismatched21} percent mismatched by seg {two}.\n"
+    return msg
+
 def three_segs(arr1, arr2, arr3, radius):
     """
     Returns percent of points clicked by combinations of the 3 segmenters
     Input: 3 segmenters' arrays and tolerance; Output: 2D array [1&2&3, [1, 1&2, 1&3], [2, 2&1, 2&3], [3, 3&1, 3&2]]
     """
-    msg = ""
-    matched12, mismatched12, mismatched21 = percent_matched(arr1, arr2, radius)
-    msg += f"Seg1 and seg2 overlapped by {matched12} percent, with {mismatched12} percent mismatched by seg1 and {mismatched21} percent mismatched by seg2. \n"
-    matched13, mismatched13, mismatched31 = percent_matched(arr1, arr3, radius)
-    msg += f"Seg1 and seg3 overlapped by {matched13} percent, with {mismatched13} percent mismatched by seg1 and {mismatched31} percent mismatched by seg3. \n"
-    matched23, mismatched23, mismatched32 = percent_matched(arr2, arr3, radius)
-    msg += f"Seg2 and seg3 overlapped by {matched23} percent, with {mismatched23} percent mismatched by seg2 and {mismatched32} percent mismatched by seg3."
+    msg = two_segs(arr1, arr2, radius, "1", "2") + two_segs(arr1, arr3, radius, "1", "3") + two_segs(arr2, arr3, radius, "2", "3")
+    return msg
 
 def manySegs(*args):
     pass
@@ -138,8 +138,7 @@ def manySegs(*args):
 def main():
     seg1 = napari_to_array("seg1_points.csv")
     seg2 = napari_to_array("seg2_points.csv")
-    oneOverlap, twoOverlap = nearest_pairs(seg1, seg2, 2)
-    print(oneOverlap)
+    print(two_segs(seg1, seg2, 2, "1", "2"))
 
 if __name__ == "__main__":
     main()
