@@ -7,7 +7,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
-from scipy.spatial import cKDTree
+# from scipy.spatial import cKDTree
 
 def napari_to_array(filename):
     """
@@ -22,7 +22,8 @@ def fiji_to_array(filename):
     """
     Input: Fiji CSV file; Output: NumPy array
     """
-    pass
+    df = pd.read_csv(filename,usecols= ['X','Y','Slice'])
+    return df.to_numpy()
 
 def to_csv(arr, filename):
     """
@@ -136,9 +137,13 @@ def manySegs(*args):
     pass
 
 def main():
-    seg1 = napari_to_array("seg1_points.csv")
-    seg2 = napari_to_array("seg2_points.csv")
-    print(two_segs(seg1, seg2, 2, "1", "2"))
+    # seg1 = napari_to_array("seg1_points.csv")
+    # seg2 = napari_to_array("seg2_points.csv")
+    # print(two_segs(seg1, seg2, 2, "1", "2"))
 
+    suhan = fiji_to_array("/Users/alexandrakim/Desktop/BUGS2022/suhan_7_9_2022.csv")
+    lindsey = np.concatenate(napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/lindsey_sn_7_9_2022.csv"),napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/lindsey_mn_7_9_2022.csv"), axis=0)
+    alex = napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/7_5_2022_left_forebrain_1P.csv")
+    
 if __name__ == "__main__":
     main()
