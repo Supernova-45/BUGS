@@ -5,20 +5,20 @@ Reads and writes TIF files in addition to performing statistical manipulations o
 import tifffile as tif
 import numpy as np
 
-class arrayManipulation:
+class ArrayManipulation:
 
     # numpy array constructor
     def __init__(self, arr):
         self.im = arr
 
-    def getArr(self):
+    def get_arr(self):
         return self.im
 
     # statistical functions
-    def writeFile(self, filename):
+    def write_file(self, filename):
         tif.imwrite(filename, self.im, photometric='minisblack')
 
-    def standardDeviation(self):
+    def standard_deviation(self):
         return np.std(self.im,axis=0,dtype='float32')
         
     def mean(self):
@@ -30,7 +30,7 @@ class arrayManipulation:
     def variance(self):
         return np.var(self.im,axis=0,dtype='float32')
 
-class imageManipulation(arrayManipulation):
+class ImageManipulation(ArrayManipulation):
 
     # constructor from TIF which inherits the array
     def __init__(self, filename):
