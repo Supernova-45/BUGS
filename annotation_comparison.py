@@ -27,7 +27,7 @@ def fiji_to_array(filename, resolution):
     Input: Fiji CSV file, pixels per micrometer; Output: NumPy array
     """
     df = pd.read_csv(filename,usecols= ['X','Y','Slice'])
-    df['Slice'] -= 1 # calibrate because fiji slices start at 1; napari starts at 0
+    df['Slice'] -= 1 # fiji slices start at 1; napari starts at 0
     df['Slice'] *= 4.8 # slices to um
     # doesn't fiji default to um already?
     df['X'] /= 1 
@@ -37,7 +37,8 @@ def fiji_to_array(filename, resolution):
 def to_napari_csv(arr, filename):
     """
     Turns 2D XYZ array of points into Napari CSV format
-    Input: NumPy array, String (name of output file); Output: CSV file called "filename"
+    Input: NumPy array, String (name of output file)
+    Output: CSV file called "filename"
     """
     df = pd.DataFrame(arr)
     df = df.reset_index()
@@ -55,7 +56,8 @@ def plot(arr):
     ax = fig.add_subplot(projection='3d')
 
     for info in arr:
-        ax.scatter3D(info[0][:,0],info[0][:,1],info[0][:,2],s=20,color=info[1],label=info[2])
+        ax.scatter3D(info[0][:,0],info[0][:,1],info[0][:,2],
+                    s=20,color=info[1],label=info[2])
 
     fig.canvas.set_window_title('Ok3')
     ax.set_title("Zebrafish brain neurons", fontweight = 'bold')
@@ -68,10 +70,11 @@ def plot(arr):
 
 def show_venn3(tuple,label1,label2,label3,color1,color2,color3,alpha):
     """
-    Input: tuple = (a,b,ab,c,ac,bc,abc), three labels and colors are strings
+    Input: tuple (a,b,ab,c,ac,bc,abc); three labels, colors = strings
     Output: Weighted venn diagram with three circles
     """
-    venn3(subsets = tuple, set_labels = (label1,label2,label3), set_colors = (color1,color2,color3), alpha = alpha)
+    venn3(subsets = tuple, set_labels = (label1,label2,label3), 
+        set_colors = (color1,color2,color3), alpha = alpha)
     plt.show()
 
 def nearest_pairs(v1, v2, radius):
@@ -122,9 +125,12 @@ def percent_matched(arr1, arr2, radius):
     Input: two 3D NumPy arrays; Output: Float between 0 and 100
     """
     closestOne, closestTwo = nearest_pairs(arr1, arr2, radius)
-    matched = overlap_size(closestOne) / (len(arr1) + len(arr2) - overlap_size(closestOne))
-    mismatched1 = (len(arr1) - overlap_size(closestOne)) / (len(arr1) + len(arr2) - overlap_size(closestOne))
-    mismatched2 = (len(arr2) - overlap_size(closestOne)) / (len(arr1) + len(arr2) - overlap_size(closestOne))
+    matched = (overlap_size(closestOne) / 
+                (len(arr1) + len(arr2) - overlap_size(closestOne)))
+    mismatched1 = ((len(arr1) - overlap_size(closestOne)) / 
+                (len(arr1) + len(arr2) - overlap_size(closestOne)))
+    mismatched2 = ((len(arr2) - overlap_size(closestOne)) / 
+                (len(arr1) + len(arr2) - overlap_size(closestOne)))
     return round(matched*100,4), round(mismatched1*100,4), round(mismatched2*100,4)
 
 def two_segs(arr1, arr2, radius, nameOne, nameTwo):
