@@ -9,24 +9,30 @@ import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 from scipy.spatial import cKDTree
 
-def napari_to_array(filename):
+from matplotlib_venn import venn3
+
+def napari_to_array(filename, resolution):
     """
     Input: Napari CSV file; Output: NumPy array
     """
     df = pd.read_csv(filename,usecols= ['axis-0','axis-1','axis-2'])
     df.columns = ['Z','Y','X']
     df = df[['X','Y','Z']]
+    df['Z'] *= 4.8 # is this a universal measurement?
+    df['X'] *= resolution
+    df['Y'] *= resolution
     return df.to_numpy()
 
-def fiji_to_array(filename, conversion):
+def fiji_to_array(filename, resolution):
     """
     Input: Fiji CSV file, pixels per micrometer; Output: NumPy array
     """
     df = pd.read_csv(filename,usecols= ['X','Y','Slice'])
     df['Slice'] -= 1 # calibrate because fiji slices start at 1; napari starts at 0
-    # convert to pixels
-    df['X'] /= conversion
-    df['Y'] /= conversion
+    df['Slice'] *= 4.8 # slices to um
+    # ***doesn't fiji default to um already?****
+    # df['X'] /= resolution 
+    # df['Y'] /= resolution 
     return df.to_numpy()
 
 def to_napari_csv(arr, filename):
@@ -34,11 +40,6 @@ def to_napari_csv(arr, filename):
     Turns 2D XYZ array of points into Napari CSV format
     Input: NumPy array, String (name of output file); Output: CSV file called "filename"
     """
-    newArr = []
-    # for slice in range(len(arr)):
-        # for coord in arr[slice]:
-            # newArr.append([float(slice),coord[0],coord[1]])
-
     df = pd.DataFrame(arr)
     df = df.reset_index()
     df.columns = ['index','axis-1','axis-2','axis-0']
@@ -64,6 +65,14 @@ def plot(arr):
     ax.set_zlabel('Z-axis (slice)', fontweight = 'bold')
 
     plt.legend(loc="upper right")
+    plt.show()
+
+def venn_three(tuple,label1,label2,label3,color1,color2,color3,alpha):
+    """
+    Input: tuple = (a,b,ab,c,ac,bc,abc), three labels and colors are strings
+    Output: Weighted venn diagram with three circles
+    """
+    venn3(subsets = tuple, set_labels = (label1,label2,label3), set_colors = (color1,color2,color3), alpha = alpha)
     plt.show()
 
 def nearest_pairs(v1, v2, radius):
@@ -138,6 +147,28 @@ def three_segs(arr1, arr2, arr3, radius):
     msg = two_segs(arr1, arr2, radius, "1", "2") + two_segs(arr1, arr3, radius, "1", "3") + two_segs(arr2, arr3, radius, "2", "3")
     return msg
 
+def venn_three_sizes(arr1, arr2, arr3, radius):
+    x, y = nearest_pairs(arr1, arr2, radius)
+    ab = overlap_size(x)
+    overlap = np.empty((ab,3))
+    for i in range(x.len()):
+        if a != -1:
+            np[i] = a[i]
+    x, y = nearest_pairs(overlap, arr3, radius)
+    abc = overlap_size(x)
+
+    x, y = nearest_pairs(arr1, arr3, radius)
+    ac = overlap_size(x)
+    x, y = nearest_pairs(arr2, arr3, radius)
+    bc = overlap_size(x)
+
+    # By principle of inclusion-exclusion
+    a = arr1.len()-ab-ac+abc
+    b = arr1.len()-ab-bc+abc
+    c = arr1.len()-ac-bc+abc
+
+    return (a,b,ab,c,ac,bc,abc)
+
 def many_segs(*args):
     pass
 
@@ -152,7 +183,7 @@ def main():
 
     # plot([[suhan, 'red', 'suhan'],[lindsey, 'green', 'lindsey'],[alex, 'blue', 'alex']])
 
-    print(three_segs(alex, lindsey, suhan, 4))
+    # print(three_segs(alex, lindsey, suhan, 4))
 
     # plotThree(suhan, 'red', 'suhan',lindsey, 'green', 'lindsey',alex, 'blue', 'alex')
     # fiji = fiji_to_array("/Users/alexandrakim/Desktop/BUGS2022/fiji_two_points.csv")
