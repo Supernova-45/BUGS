@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
+# from mpl_toolkits import mplot3d
 from scipy.spatial import cKDTree
 
 from matplotlib_venn import venn3
@@ -30,9 +30,9 @@ def fiji_to_array(filename, resolution):
     df = pd.read_csv(filename,usecols= ['X','Y','Slice'])
     df['Slice'] -= 1 # calibrate because fiji slices start at 1; napari starts at 0
     df['Slice'] *= 4.8 # slices to um
-    # ***doesn't fiji default to um already?****
-    # df['X'] /= resolution 
-    # df['Y'] /= resolution 
+    # doesn't fiji default to um already?
+    df['X'] /= 1 
+    df['Y'] /= 1 
     return df.to_numpy()
 
 def to_napari_csv(arr, filename):
@@ -67,7 +67,7 @@ def plot(arr):
     plt.legend(loc="upper right")
     plt.show()
 
-def venn_three(tuple,label1,label2,label3,color1,color2,color3,alpha):
+def show_venn3(tuple,label1,label2,label3,color1,color2,color3,alpha):
     """
     Input: tuple = (a,b,ab,c,ac,bc,abc), three labels and colors are strings
     Output: Weighted venn diagram with three circles
@@ -123,9 +123,9 @@ def percent_matched(arr1, arr2, radius):
     Input: two 3D NumPy arrays; Output: Float between 0 and 100
     """
     closestOne, closestTwo = nearest_pairs(arr1, arr2, radius)
-    matched = overlap_size(closestOne) / (len(arr1) + len(arr2))
-    mismatched1 = (len(arr1) - overlap_size(closestOne)) / (len(arr1) + len(arr2))
-    mismatched2 = (len(arr2) - overlap_size(closestOne)) / (len(arr1) + len(arr2))
+    matched = overlap_size(closestOne) / (len(arr1) + len(arr2) - overlap_size(closestOne))
+    mismatched1 = (len(arr1) - overlap_size(closestOne)) / (len(arr1) + len(arr2) - overlap_size(closestOne))
+    mismatched2 = (len(arr2) - overlap_size(closestOne)) / (len(arr1) + len(arr2) - overlap_size(closestOne))
     return round(matched*100,4), round(mismatched1*100,4), round(mismatched2*100,4)
 
 def two_segs(arr1, arr2, radius, nameOne, nameTwo):
@@ -151,9 +151,11 @@ def venn_three_sizes(arr1, arr2, arr3, radius):
     x, y = nearest_pairs(arr1, arr2, radius)
     ab = overlap_size(x)
     overlap = np.empty((ab,3))
-    for i in range(x.len()):
-        if a != -1:
-            np[i] = a[i]
+    count = 0
+    for index in x:
+        if index != -1:
+            overlap[count] = arr2[index]
+            count += 1
     x, y = nearest_pairs(overlap, arr3, radius)
     abc = overlap_size(x)
 
@@ -163,11 +165,11 @@ def venn_three_sizes(arr1, arr2, arr3, radius):
     bc = overlap_size(x)
 
     # By principle of inclusion-exclusion
-    a = arr1.len()-ab-ac+abc
-    b = arr1.len()-ab-bc+abc
-    c = arr1.len()-ac-bc+abc
+    a = len(arr1)-ab-ac+abc
+    b = len(arr2)-ab-bc+abc
+    c = len(arr3)-ac-bc+abc
 
-    return (a,b,ab,c,ac,bc,abc)
+    return (a,b,ab-abc,c,ac-abc,bc-abc,abc)
 
 def many_segs(*args):
     pass
@@ -177,17 +179,20 @@ def main():
     # seg2 = napari_to_array("data/seg2_points.csv")
     # print(two_segs(seg1, seg2, 2, "1", "2"))
 
-    suhan = fiji_to_array("data/suhan_7_9_2022.csv",1.7)
-    lindsey = np.concatenate((napari_to_array("data/lindsey_sn_7_9_2022.csv"), napari_to_array("data/lindsey_mn_7_9_2022.csv")), axis=0)
-    alex = napari_to_array("data/alex_7_9_2022.csv")
+    suhan = fiji_to_array("data/suhan_7_9_2022.csv",1)
+    lindsey = np.concatenate((napari_to_array("data/lindsey_sn_7_9_2022.csv",1.7), napari_to_array("data/lindsey_mn_7_9_2022.csv",1.7)), axis=0)
+    alex = napari_to_array("data/alex_7_9_2022.csv", 1.7)
 
     # plot([[suhan, 'red', 'suhan'],[lindsey, 'green', 'lindsey'],[alex, 'blue', 'alex']])
 
-    # print(three_segs(alex, lindsey, suhan, 4))
+    show_venn3((venn_three_sizes(alex, lindsey, suhan, 4)), 'Alex','Lindsey','Suhan', 'purple','blue','cyan',0.5)
+
+    print(three_segs(alex, lindsey, suhan, 4))
+
 
     # plotThree(suhan, 'red', 'suhan',lindsey, 'green', 'lindsey',alex, 'blue', 'alex')
-    # fiji = fiji_to_array("/Users/alexandrakim/Desktop/BUGS2022/fiji_two_points.csv")
-    # napari = napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/napari_two_points.csv")
+    # fiji = fiji_to_array("/Users/alexandrakim/Desktop/BUGS2022/fiji_two_points.csv", 1)
+    # napari = napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/napari_two_points.csv", 1.17)
 
     # to_napari_csv(fiji, "data/output_points.csv")
     # plot([[fiji, 'red', 'fiji'],[napari, 'green','napari']])
