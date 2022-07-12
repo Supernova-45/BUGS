@@ -6,7 +6,6 @@ import pandas as pd
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-# from mpl_toolkits import mplot3d
 from scipy.spatial import cKDTree
 
 from matplotlib_venn import venn3
@@ -148,6 +147,11 @@ def three_segs(arr1, arr2, arr3, radius):
     return msg
 
 def venn_three_sizes(arr1, arr2, arr3, radius):
+    """
+    Calculates various unions of three sets
+    Input: Three XYZ NumPy arrays and a tolerance threshold 
+    Output: Tuple of (a,b,ab,c,ac,bc,abc)
+    """
     x, y = nearest_pairs(arr1, arr2, radius)
     ab = overlap_size(x)
     overlap = np.empty((ab,3))
@@ -187,7 +191,7 @@ def main():
 
     show_venn3((venn_three_sizes(alex, lindsey, suhan, 4)), 'Alex','Lindsey','Suhan', 'purple','blue','cyan',0.5)
 
-    print(three_segs(alex, lindsey, suhan, 4))
+    # print(three_segs(alex, lindsey, suhan, 4))
 
 
     # plotThree(suhan, 'red', 'suhan',lindsey, 'green', 'lindsey',alex, 'blue', 'alex')
