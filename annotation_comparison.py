@@ -10,21 +10,21 @@ from scipy.spatial import cKDTree
 
 from matplotlib_venn import venn3
 
-def napari_to_array(filename, resolution):
+def napari_to_array(filename, xRes, yRes, zRes):
     """
-    Input: Napari CSV file; Output: NumPy array
+    Input: Napari CSV file and resolution; Output: NumPy array
     """
     df = pd.read_csv(filename,usecols= ['axis-0','axis-1','axis-2'])
     df.columns = ['Z','Y','X']
     df = df[['X','Y','Z']]
-    df['Z'] *= 4.8 # is this a universal measurement?
-    df['X'] *= resolution
-    df['Y'] *= resolution
+    df['Z'] *= zRes # is this a universal measurement?
+    df['X'] *= xRes
+    df['Y'] *= yRes
     return df.to_numpy()
 
-def fiji_to_array(filename, resolution):
+def fiji_to_array(filename, xRes, yRes, zRes):
     """
-    Input: Fiji CSV file, pixels per micrometer; Output: NumPy array
+    Input: Fiji CSV file and resolution in pixels per micrometer; Output: NumPy array
     """
     df = pd.read_csv(filename,usecols= ['X','Y','Slice'])
     df['Slice'] -= 1 # fiji slices start at 1; napari starts at 0
@@ -184,7 +184,35 @@ def venn_three_sizes(arr1, arr2, arr3, radius):
 def many_segs(*args):
     pass
 
+def test_comparison():
+    '''
+    Testing the resolution aspect of nearest_pairs().
+    '''
+    arrOne = napari_to_array("data/test_pairing_depth_1.csv",1,1,1)
+    arrTwo = napari_to_array("data/test_pairing_depth_2.csv",1,1,1)
+    
+    print("Resolution of [1,1,1]:")
+    print("Array 1:")
+    print(arrOne)
+    print("Array 2:")
+    print(arrTwo)
+    print("Nearest pairs within radius of 5:")
+    print(nearest_pairs(arrOne, arrTwo,5))
+    print()
+    
+    arrOne = napari_to_array("data/test_pairing_depth_1.csv",1.17,1.17,4.8)
+    arrTwo = napari_to_array("data/test_pairing_depth_2.csv",1.17,1.17,4.8)
+    
+    print("Resolution of [1.17,1.17,4.8]:")
+    print("Array 1:")
+    print(arrOne)
+    print("Array 2:")
+    print(arrTwo)
+    print("Nearest pairs within radius of 5:")
+    print(nearest_pairs(arrOne, arrTwo,5))
+
 def main():
+    test_comparison()
     # seg1 = napari_to_array("data/seg1_points.csv")
     # seg2 = napari_to_array("data/seg2_points.csv")
     # print(two_segs(seg1, seg2, 2, "1", "2"))
@@ -194,12 +222,12 @@ def main():
     # alex = napari_to_array("data/alex_7_9_2022.csv", 1.7)
 
     # suhan = fiji_to_array("data/suhan_7_9_2022.csv",1)
-    lindsey = np.concatenate((napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/lindsey_2P_mn_7_19_22.csv",1), napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/lindsey_2P_sn_7_19_22.csv",1)), axis=0)
-    alex = napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/alex_2P_7_19_22.csv", 1.7)
+    # lindsey = np.concatenate((napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/lindsey_2P_mn_7_19_22.csv",1), napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/lindsey_2P_sn_7_19_22.csv",1)), axis=0)
+    # alex = napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/alex_2P_7_19_22.csv", 1.7)
     
     # plot([[suhan, 'red', 'suhan'],[lindsey, 'green', 'lindsey'],[alex, 'blue', 'alex']])
 
-    show_venn3((venn_three_sizes(alex, lindsey, suhan, 6.5)), 'Alex','Lindsey','Suhan', 'purple','blue','cyan',0.5)
+    # show_venn3((venn_three_sizes(alex, lindsey, suhan, 6.5)), 'Alex','Lindsey','Suhan', 'purple','blue','cyan',0.5)
 
     # print(three_segs(alex, lindsey, suhan, 4))
 
