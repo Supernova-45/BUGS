@@ -221,13 +221,13 @@ def main():
     # lindsey = np.concatenate((napari_to_array("data/lindsey_sn_7_9_2022.csv",1.7), napari_to_array("data/lindsey_mn_7_9_2022.csv",1.7)), axis=0)
     # alex = napari_to_array("data/alex_7_9_2022.csv", 1.7)
 
-    # suhan = fiji_to_array("data/suhan_7_9_2022.csv",1)
-    # lindsey = np.concatenate((napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/lindsey_2P_mn_7_19_22.csv",1), napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/lindsey_2P_sn_7_19_22.csv",1)), axis=0)
-    # alex = napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/alex_2P_7_19_22.csv", 1.7)
+    suhan = fiji_to_array("data/suhan_2P_7_19_2022.csv",1,1,4.8)
+    lindsey = np.concatenate((napari_to_array("data/lindsey_2P_mn_7_19_22.csv",1,1,4.8), napari_to_array("data/lindsey_2P_sn_7_19_22.csv",1,1,4.8)), axis=0)
+    alex = napari_to_array("data/alex_2P_7_19_22.csv", 1,1,4.8)
     
     # plot([[suhan, 'red', 'suhan'],[lindsey, 'green', 'lindsey'],[alex, 'blue', 'alex']])
 
-    # show_venn3((venn_three_sizes(alex, lindsey, suhan, 6.5)), 'Alex','Lindsey','Suhan', 'purple','blue','cyan',0.5)
+    show_venn3((venn_three_sizes(alex, lindsey, suhan, 6.5)), 'Alex','Lindsey','Suhan', 'purple','blue','cyan',0.5)
 
     # print(three_segs(alex, lindsey, suhan, 4))
 
