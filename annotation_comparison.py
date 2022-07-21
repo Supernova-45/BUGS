@@ -230,6 +230,7 @@ def many_segs(*args):
 def label_local_max(localMax, annotators, radius, filename):
     """
     Returns a csv with 0 for Not a neuron and 1 for Yes a neuron
+    Input: XYZ array of local maxes and annotator points, tolerance threshold (double), filename (string)
     """
     a, b = nearest_pairs(localMax, annotators, radius)
     neuronLabel = np.full((localMax.shape[0],1), 0) # 1D array containing 1s and 0s
@@ -246,6 +247,21 @@ def label_local_max(localMax, annotators, radius, filename):
     
     df.to_csv(filename, sep=',',index=None)
 
+def plot_prominence(annotators):
+    prominence = [6,8,10,12,14]
+    neurons = []
+    notNeurons = []
+    for i in range(6,16,2):
+        localMax = fiji_to_array("data/local_max/local_max_2P_prominence_"+str(i)+".csv", 1, 1, 4.8)
+        a,b,ab = venn_two_sizes(annotators,localMax,4.5)
+        neurons.append(ab)
+        notNeurons.append(b)
+        
+    plt.plot(prominence, neurons, '-o',label='Neurons')
+    plt.plot(prominence, notNeurons, '-o',label='Not neurons')
+    plt.legend()
+    plt.show()
+    
 def test_comparison():
     '''
     Testing the resolution aspect of nearest_pairs().
@@ -291,9 +307,11 @@ def main():
     sl = union(suhan, lindsey, 6)
     sla = union(sl, alex, 4.5) # all 2P neurons annotated
     
-    localMax = fiji_to_array("data/local_max/local_max_2P_prominence_8.csv", 1, 1, 4.8)
+    # localMax = fiji_to_array("data/local_max/local_max_2P_prominence_8.csv", 1, 1, 4.8)
 
-    label_local_max(localMax,sla, 4.5, 'data/local_max/local_max_labeled.csv')
+
+    
+    # label_local_max(localMax,sla, 4.5, 'data/local_max/local_max_labeled.csv')
     # plot([[sla,'red','annotators'],[localMax,'blue','Local max']])
     # print(two_segs(sla, localMax, 4.5, 'Annotators', 'Local max'))
 
