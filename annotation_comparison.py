@@ -267,6 +267,8 @@ def plot_prominence(annotators):
             
         plt.subplot(2,3,s+1)
         plt.xlabel("Sigma " + str(round(s*0.4,1)))
+        ax = plt.gca()
+        ax.set_ylim([0, 2300])
         plt.plot(prominence, truePos, '-o',label='True pos')
         plt.plot(prominence, falsePos, '-o',label='False pos')
         plt.plot(prominence, falseNeg, '-o',label='False neg')
