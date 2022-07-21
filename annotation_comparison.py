@@ -248,17 +248,23 @@ def label_local_max(localMax, annotators, radius, filename):
     df.to_csv(filename, sep=',',index=None)
 
 def plot_prominence(annotators):
-    prominence = [6,8,10,12,14]
-    neurons = []
-    notNeurons = []
-    for i in range(6,16,2):
+    prominence = [6,7,8,9,10]
+    truePos = []
+    falsePos = []
+    falseNeg = []
+    for i in range(6,11):
         localMax = fiji_to_array("data/local_max/local_max_2P_prominence_"+str(i)+".csv", 1, 1, 4.8)
-        a,b,ab = venn_two_sizes(annotators,localMax,4.5)
-        neurons.append(ab)
-        notNeurons.append(b)
+        a,b,ab = venn_two_sizes(sla,localMax,4.5)
+        truePos.append(ab)
+        falsePos.append(b)
+        falseNeg.append(a)
         
-    plt.plot(prominence, neurons, '-o',label='Neurons')
-    plt.plot(prominence, notNeurons, '-o',label='Not neurons')
+    plt.xlabel("Prominence")
+    plt.title("Local Max vs. Annotators' Points")
+    
+    plt.plot(prominence, truePos, '-o',label='True positives')
+    plt.plot(prominence, falsePos, '-o',label='False positives')
+    plt.plot(prominence, falseNeg, '-o',label='False negatives')
     plt.legend()
     plt.show()
     
@@ -309,25 +315,7 @@ def main():
     
     # localMax = fiji_to_array("data/local_max/local_max_2P_prominence_8.csv", 1, 1, 4.8)
 
-    prominence = [6,8,10,12,14]
-    truePos = []
-    falsePos = []
-    falseNeg = []
-    for i in range(6,16,2):
-        localMax = fiji_to_array("data/local_max/local_max_2P_prominence_"+str(i)+".csv", 1, 1, 4.8)
-        a,b,ab = venn_two_sizes(sla,localMax,4.5)
-        truePos.append(ab)
-        falsePos.append(b)
-        falseNeg.append(a)
-        
-    plt.xlabel("Prominence")
-    plt.title("Local Max vs. Annotators' Points")
-    
-    plt.plot(prominence, truePos, '-o',label='True positives')
-    plt.plot(prominence, falsePos, '-o',label='False positives')
-    plt.plot(prominence, falseNeg, '-o',label='False negatives')
-    plt.legend()
-    plt.show()
+
     
     
     # label_local_max(localMax,sla, 4.5, 'data/local_max/local_max_labeled.csv')
