@@ -2,6 +2,7 @@
 Program that compares segmenters' data annotations from a Napari/Fiji CSV file.
 '''
 
+from turtle import shape
 import pandas as pd
 import numpy as np
 import math
@@ -125,7 +126,7 @@ def nearest_pairs(v1, v2, radius):
 def overlap_size(arr): 
     """
     Finds the number of non -1 points from a 1D array
-    Input: 1D array from getOverlap(); Output: int
+    Input: 1D array; Output: int
     """
     return len(arr) - np.count_nonzero(arr == -1)
 
@@ -300,10 +301,29 @@ def test_comparison():
     print("Nearest pairs within radius of 5:")
     print(nearest_pairs(arrOne, arrTwo,5) + "\n")
 
+def recursive_pairing(arr, maxes, radius):
+    neurons = []
+    maxi = maxes.copy()
+
+    while (True):
+        v1, v2 = nearest_pairs(arr,maxi,radius)
+        if overlap_size(v1) > 0:
+            neurons.append([])
+            for i in range(len(maxi)):
+                if v1[i] != -1:
+                    neurons[0].append(maxi[i].copy()) 
+                    maxi = np.delete(maxi,i, axis=0)
+                    i -= 1
+        else:
+            break
+    
+    return neurons
+
 def main():
     seg1 = napari_to_array("data/seg1_points.csv",1,1,4.8)
     seg2 = napari_to_array("data/seg2_points.csv",1,1,4.8)
     
+    recursive_pairing(seg1, seg2, 4.5)
     # label_local_max(seg1,seg2, 4.5, 'test')
     # print(two_segs(seg1, seg2, 2, "1", "2"))
 
@@ -320,13 +340,13 @@ def main():
     lindsey = np.concatenate((napari_to_array("data/lindsey_2P_mn_7_19_22.csv",1,1,4.8), napari_to_array("data/lindsey_2P_sn_7_19_22.csv",1,1,4.8)), axis=0)
     alex = napari_to_array("data/alex_2P_7_19_22.csv", 1,1,4.8)
     
-    sl = union(suhan, lindsey, 6)
-    sla = union(sl, alex, 4.5) # all 2P neurons annotated
+    # sl = union(suhan, lindsey, 6)
+    # sla = union(sl, alex, 4.5) # all 2P neurons annotated
     
     # localMax = fiji_to_array("data/local_max/local_max_2P_prominence_8.csv", 1, 1, 4.8)
 
 
-    plot_prominence(sla)
+    # plot_prominence(sla)
     
     # label_local_max(localMax,sla, 4.5, 'data/local_max/local_max_labeled.csv')
     # plot([[sla,'red','annotators'],[localMax,'blue','Local max']])
