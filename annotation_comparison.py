@@ -248,24 +248,32 @@ def label_local_max(localMax, annotators, radius, filename):
     df.to_csv(filename, sep=',',index=None)
 
 def plot_prominence(annotators):
-    prominence = [4,5,6,7,8,9,10]
-    truePos = []
-    falsePos = []
-    falseNeg = []
-    for i in range(4,11):
-        localMax = fiji_to_array("data/local_max/local_max_2P_prominence_"+str(i)+".csv", 1, 1, 4.8)
-        a,b,ab = venn_two_sizes(annotators,localMax,4.5)
-        truePos.append(ab)
-        falsePos.append(b)
-        falseNeg.append(a)
-        
-    plt.xlabel("Prominence")
-    plt.title("Local Max vs. Annotators' Points")
     
-    plt.plot(prominence, truePos, '-o',label='True positives')
-    plt.plot(prominence, falsePos, '-o',label='False positives')
-    plt.plot(prominence, falseNeg, '-o',label='False negatives')
-    plt.legend()
+    for s in range(0,6):
+        prominence = []
+        truePos = []
+        falsePos = []
+        falseNeg = []
+        
+        for i in range(1,11):
+        
+            localMax = fiji_to_array("data/local_max/local_max_2P_prominence_"+str(i)+
+                                     "_sigma_"+str(s)+".csv", 1, 1, 4.8)
+            a,b,ab = venn_two_sizes(annotators,localMax,4.5)
+            prominence.append(i)
+            truePos.append(ab)
+            falsePos.append(b)
+            falseNeg.append(a)
+            
+        plt.subplot(2,3,s+1)
+        plt.xlabel("Sigma " + str(round(s*0.4,1)))
+        plt.plot(prominence, truePos, '-o',label='True pos')
+        plt.plot(prominence, falsePos, '-o',label='False pos')
+        plt.plot(prominence, falseNeg, '-o',label='False neg')
+        plt.legend()
+        
+    # plt.title("Local Max vs. Annotators' Points")
+    
     plt.show()
     
 def test_comparison():
