@@ -8,7 +8,7 @@ import math
 import matplotlib.pyplot as plt
 from scipy.spatial import cKDTree
 
-from matplotlib_venn import venn3
+from matplotlib_venn import venn3, venn2
 
 def napari_to_array(filename, xRes, yRes, zRes):
     """
@@ -77,6 +77,15 @@ def show_venn3(tuple,label1,label2,label3,color1,color2,color3,alpha):
     venn3(subsets = tuple, set_labels = (label1,label2,label3), 
         set_colors = (color1,color2,color3), alpha = alpha)
     plt.show()
+    
+def show_venn2(tuple, label1, label2, color1, color2, alpha):
+    """
+    Input: tuple (a,b,ab); two labels and colors = strings
+    Output: Weighted venn diagram with two circles
+    """
+    venn2(subsets = tuple, set_labels = (label1,label2), 
+        set_colors = (color1,color2), alpha = alpha)
+    plt.show()  
 
 def nearest_pairs(v1, v2, radius):
     """
@@ -166,6 +175,26 @@ def union(arr1, arr2, radius):
             
     return union
 
+def venn_two_sizes(arr1, arr2, radius):
+    """
+    Calculates various unions of two sets
+    Input: Two XYZ NumPy arrays and a tolerance threshold 
+    Output: Tuple of (a,b,ab)
+    """
+    x, y = nearest_pairs(arr1, arr2, radius)
+    ab = overlap_size(x)
+    a = 0
+    for index in x:
+        if index == -1:
+            a += 1
+            
+    b = 0
+    for index in y:
+        if index == -1:
+            b += 1
+
+    return (a, b, ab)
+
 def venn_three_sizes(arr1, arr2, arr3, radius):
     """
     Calculates various unions of three sets
@@ -198,6 +227,25 @@ def venn_three_sizes(arr1, arr2, arr3, radius):
 def many_segs(*args):
     pass
 
+def label_local_max(localMax, annotators, radius, filename):
+    """
+    Returns a csv with 0 for Not a neuron and 1 for Yes a neuron
+    """
+    a, b = nearest_pairs(localMax, annotators, radius)
+    neuronLabel = np.full((localMax.shape[0],1), 0) # 1D array containing 1s and 0s
+    
+    for index in range(len(a)):
+        if (a[index] > -1):
+            neuronLabel[index] = 1
+    
+    df = pd.DataFrame(localMax)
+    df = df.reset_index()
+    df.columns = ['index','X','Y','Z']
+    df['Z'] = np.round_(df['Z'] / 4.8, decimals = 1)
+    df['label'] = neuronLabel
+    
+    df.to_csv(filename, sep=',',index=None)
+
 def test_comparison():
     '''
     Testing the resolution aspect of nearest_pairs().
@@ -221,26 +269,36 @@ def test_comparison():
     print(nearest_pairs(arrOne, arrTwo,5) + "\n")
 
 def main():
-    # seg1 = napari_to_array("data/seg1_points.csv")
-    # seg2 = napari_to_array("data/seg2_points.csv")
+    seg1 = napari_to_array("data/seg1_points.csv",1,1,4.8)
+    seg2 = napari_to_array("data/seg2_points.csv",1,1,4.8)
+    
+    # label_local_max(seg1,seg2, 4.5, 'test')
     # print(two_segs(seg1, seg2, 2, "1", "2"))
 
     # suhan = fiji_to_array("data/suhan_7_9_2022.csv",1)
     # lindsey = np.concatenate((napari_to_array("data/lindsey_sn_7_9_2022.csv",1.7), napari_to_array("data/lindsey_mn_7_9_2022.csv",1.7)), axis=0)
     # alex = napari_to_array("data/alex_7_9_2022.csv", 1.7)
 
-    #one = napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/napari_2P_point.csv", 1,1,4.8)
-    #two = fiji_to_array("/Users/alexandrakim/Desktop/BUGS2022/fiji_2P_point.csv", 1,1,4.8)
+    # one = napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/napari_2P_point.csv", 1,1,4.8)
+    # two = fiji_to_array("/Users/alexandrakim/Desktop/BUGS2022/fiji_2P_point.csv", 1,1,4.8)
+    
+    # show_venn2(venn_two_sizes(seg1,seg2,4),'one','two','blue','cyan',0.5)
     
     suhan = fiji_to_array("data/suhan_2P_7_19_2022.csv",1,1,4.8)
     lindsey = np.concatenate((napari_to_array("data/lindsey_2P_mn_7_19_22.csv",1,1,4.8), napari_to_array("data/lindsey_2P_sn_7_19_22.csv",1,1,4.8)), axis=0)
     alex = napari_to_array("data/alex_2P_7_19_22.csv", 1,1,4.8)
+    
     sl = union(suhan, lindsey, 6)
-    sla = union(sl, alex, 6) # all 2P neurons annotated
+    sla = union(sl, alex, 4.5) # all 2P neurons annotated
     
-    to_napari_csv(sla, "data/all_annotators_2P")
-    
-    
+    localMax = fiji_to_array("data/local_max/local_max_2P_prominence_8.csv", 1, 1, 4.8)
+
+    label_local_max(localMax,sla, 4.5, 'data/local_max/local_max_labeled.csv')
+    # plot([[sla,'red','annotators'],[localMax,'blue','Local max']])
+    # print(two_segs(sla, localMax, 4.5, 'Annotators', 'Local max'))
+
+    # show_venn2(venn_two_sizes(sla,localMax,4.5),'Annotators','Local max','blue','cyan',0.6)
+
     # plot([[suhan, 'red', 'suhan'],[lindsey, 'green', 'lindsey'],[alex, 'blue', 'alex']])
 
     # to_napari_csv((np.concatenate((suhan,lindsey, alex), axis=0)), "data/all_annotators_2P")
