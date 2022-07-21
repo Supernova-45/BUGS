@@ -309,7 +309,26 @@ def main():
     
     # localMax = fiji_to_array("data/local_max/local_max_2P_prominence_8.csv", 1, 1, 4.8)
 
-
+    prominence = [6,8,10,12,14]
+    truePos = []
+    falsePos = []
+    falseNeg = []
+    for i in range(6,16,2):
+        localMax = fiji_to_array("data/local_max/local_max_2P_prominence_"+str(i)+".csv", 1, 1, 4.8)
+        a,b,ab = venn_two_sizes(sla,localMax,4.5)
+        truePos.append(ab)
+        falsePos.append(b)
+        falseNeg.append(a)
+        
+    plt.xlabel("Prominence")
+    plt.title("Local Max vs. Annotators' Points")
+    
+    plt.plot(prominence, truePos, '-o',label='True positives')
+    plt.plot(prominence, falsePos, '-o',label='False positives')
+    plt.plot(prominence, falseNeg, '-o',label='False negatives')
+    plt.legend()
+    plt.show()
+    
     
     # label_local_max(localMax,sla, 4.5, 'data/local_max/local_max_labeled.csv')
     # plot([[sla,'red','annotators'],[localMax,'blue','Local max']])
