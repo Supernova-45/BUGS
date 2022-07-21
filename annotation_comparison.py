@@ -248,13 +248,13 @@ def label_local_max(localMax, annotators, radius, filename):
     df.to_csv(filename, sep=',',index=None)
 
 def plot_prominence(annotators):
-    prominence = [6,7,8,9,10]
+    prominence = [4,5,6,7,8,9,10]
     truePos = []
     falsePos = []
     falseNeg = []
-    for i in range(6,11):
+    for i in range(4,11):
         localMax = fiji_to_array("data/local_max/local_max_2P_prominence_"+str(i)+".csv", 1, 1, 4.8)
-        a,b,ab = venn_two_sizes(sla,localMax,4.5)
+        a,b,ab = venn_two_sizes(annotators,localMax,4.5)
         truePos.append(ab)
         falsePos.append(b)
         falseNeg.append(a)
@@ -316,7 +316,7 @@ def main():
     # localMax = fiji_to_array("data/local_max/local_max_2P_prominence_8.csv", 1, 1, 4.8)
 
 
-    
+    plot_prominence(sla)
     
     # label_local_max(localMax,sla, 4.5, 'data/local_max/local_max_labeled.csv')
     # plot([[sla,'red','annotators'],[localMax,'blue','Local max']])
