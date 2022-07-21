@@ -192,24 +192,19 @@ def test_comparison():
     arrTwo = napari_to_array("data/test_pairing_depth_2.csv",1,1,1)
     
     print("Resolution of [1,1,1]:")
-    print("Array 1:")
-    print(arrOne)
-    print("Array 2:")
-    print(arrTwo)
+    print("Array 1: \n" + str(arrOne))
+    print("Array 2: \n" + str(arrTwo))
     print("Nearest pairs within radius of 5:")
-    print(nearest_pairs(arrOne, arrTwo,5))
-    print()
+    print(nearest_pairs(arrOne, arrTwo,5) + "\n")
     
     arrOne = napari_to_array("data/test_pairing_depth_1.csv",1.17,1.17,4.8)
     arrTwo = napari_to_array("data/test_pairing_depth_2.csv",1.17,1.17,4.8)
     
     print("Resolution of [1.17,1.17,4.8]:")
-    print("Array 1:")
-    print(arrOne)
-    print("Array 2:")
-    print(arrTwo)
+    print("Array 1: \n" + str(arrOne))
+    print("Array 2: \n" + str(arrTwo))
     print("Nearest pairs within radius of 5:")
-    print(nearest_pairs(arrOne, arrTwo,5))
+    print(nearest_pairs(arrOne, arrTwo,5) + "\n")
 
 def main():
     test_comparison()
@@ -227,7 +222,9 @@ def main():
     
     # plot([[suhan, 'red', 'suhan'],[lindsey, 'green', 'lindsey'],[alex, 'blue', 'alex']])
 
-    show_venn3((venn_three_sizes(alex, lindsey, suhan, 6.5)), 'Alex','Lindsey','Suhan', 'purple','blue','cyan',0.5)
+    to_napari_csv((np.concatenate((suhan,lindsey, alex), axis=0)), "data/all_annotators_2P")
+    
+    # show_venn3((venn_three_sizes(alex, lindsey, suhan, 6.5)), 'Alex','Lindsey','Suhan', 'purple','blue','cyan',0.5)
 
     # print(three_segs(alex, lindsey, suhan, 4))
 
