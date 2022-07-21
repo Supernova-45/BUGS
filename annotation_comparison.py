@@ -152,6 +152,19 @@ def three_segs(arr1, arr2, arr3, radius):
     msg = two_segs(arr1, arr2, radius, "1", "2") + two_segs(arr1, arr3, radius, "1", "3") + two_segs(arr2, arr3, radius, "2", "3")
     return msg
 
+def union(arr1, arr2, radius):
+    """
+    Returns an array of unique points (the union) from 2 arrays
+    Input: 2 XYZ arrays and a threshold; Output: XYZ array
+    """
+    union = arr1.copy()
+    x, y = nearest_pairs(arr1, arr2, radius)
+    for index in range(len(y)):
+        if (y[index] == -1):
+            union = np.append(union, [arr2[index]], axis=0)
+            
+    return union
+
 def venn_three_sizes(arr1, arr2, arr3, radius):
     """
     Calculates various unions of three sets
@@ -207,7 +220,6 @@ def test_comparison():
     print(nearest_pairs(arrOne, arrTwo,5) + "\n")
 
 def main():
-    test_comparison()
     # seg1 = napari_to_array("data/seg1_points.csv")
     # seg2 = napari_to_array("data/seg2_points.csv")
     # print(two_segs(seg1, seg2, 2, "1", "2"))
@@ -216,13 +228,17 @@ def main():
     # lindsey = np.concatenate((napari_to_array("data/lindsey_sn_7_9_2022.csv",1.7), napari_to_array("data/lindsey_mn_7_9_2022.csv",1.7)), axis=0)
     # alex = napari_to_array("data/alex_7_9_2022.csv", 1.7)
 
+    one = napari_to_array("data/test_pairing_depth_1.csv", 1,1,1)
+    two = napari_to_array("data/test_pairing_depth_2.csv", 1,1,1)
+    print(union(one, two, 1))
+    
     suhan = fiji_to_array("data/suhan_2P_7_19_2022.csv",1,1,4.8)
     lindsey = np.concatenate((napari_to_array("data/lindsey_2P_mn_7_19_22.csv",1,1,4.8), napari_to_array("data/lindsey_2P_sn_7_19_22.csv",1,1,4.8)), axis=0)
     alex = napari_to_array("data/alex_2P_7_19_22.csv", 1,1,4.8)
     
     # plot([[suhan, 'red', 'suhan'],[lindsey, 'green', 'lindsey'],[alex, 'blue', 'alex']])
 
-    to_napari_csv((np.concatenate((suhan,lindsey, alex), axis=0)), "data/all_annotators_2P")
+    # to_napari_csv((np.concatenate((suhan,lindsey, alex), axis=0)), "data/all_annotators_2P")
     
     # show_venn3((venn_three_sizes(alex, lindsey, suhan, 6.5)), 'Alex','Lindsey','Suhan', 'purple','blue','cyan',0.5)
 
