@@ -43,6 +43,7 @@ def to_napari_csv(arr, filename):
     df = pd.DataFrame(arr)
     df = df.reset_index()
     df.columns = ['index','axis-1','axis-2','axis-0']
+    df['axis-0'] = np.round_(df['axis-0'] / 4.8, decimals = 1)
     df = df[['index','axis-0','axis-1','axis-2']]
 
     df.to_csv(filename, sep=',',index=None)
@@ -228,13 +229,17 @@ def main():
     # lindsey = np.concatenate((napari_to_array("data/lindsey_sn_7_9_2022.csv",1.7), napari_to_array("data/lindsey_mn_7_9_2022.csv",1.7)), axis=0)
     # alex = napari_to_array("data/alex_7_9_2022.csv", 1.7)
 
-    one = napari_to_array("data/test_pairing_depth_1.csv", 1,1,1)
-    two = napari_to_array("data/test_pairing_depth_2.csv", 1,1,1)
-    print(union(one, two, 1))
+    #one = napari_to_array("/Users/alexandrakim/Desktop/BUGS2022/napari_2P_point.csv", 1,1,4.8)
+    #two = fiji_to_array("/Users/alexandrakim/Desktop/BUGS2022/fiji_2P_point.csv", 1,1,4.8)
     
     suhan = fiji_to_array("data/suhan_2P_7_19_2022.csv",1,1,4.8)
     lindsey = np.concatenate((napari_to_array("data/lindsey_2P_mn_7_19_22.csv",1,1,4.8), napari_to_array("data/lindsey_2P_sn_7_19_22.csv",1,1,4.8)), axis=0)
     alex = napari_to_array("data/alex_2P_7_19_22.csv", 1,1,4.8)
+    sl = union(suhan, lindsey, 6)
+    sla = union(sl, alex, 6) # all 2P neurons annotated
+    
+    to_napari_csv(sla, "data/all_annotators_2P")
+    
     
     # plot([[suhan, 'red', 'suhan'],[lindsey, 'green', 'lindsey'],[alex, 'blue', 'alex']])
 
