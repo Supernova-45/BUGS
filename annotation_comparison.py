@@ -35,6 +35,15 @@ def fiji_to_array(filename, xRes, yRes, zRes):
     df['Y'] /= 1 
     return df.to_numpy()
 
+def to_labeled_csv(arr,filename):
+    df = pd.DataFrame(arr)
+    df = df.reset_index()
+    df.columns = ['index','axis-1','axis-2','axis-0','label']
+    df['axis-0'] = np.round_(df['axis-0'] / 4.8, decimals = 1)
+    df = df[['index','axis-0','axis-1','axis-2','label']]
+
+    df.to_csv(filename, sep=',',index=None)
+    
 def to_napari_csv(arr, filename):
     """
     Turns 2D XYZ array of points into Napari CSV format
@@ -313,7 +322,7 @@ def all_pairing(segs, maxes, radius):
     zeroCol = np.zeros((len(maxes),1))
     labeledMaxi = np.append(maxes,zeroCol,axis=1)
     done = False
-    removed = 0;
+    removed = 0
 
     while not done:
         v1, v2 = nearest_pairs(segs,unpairedMaxi,radius)
@@ -333,32 +342,11 @@ def all_pairing(segs, maxes, radius):
             done = True
                                 
     return labeledMaxi
-
-def recursive_pairing(arr, maxes, radius):
-    neurons = []
-    maxi = maxes.copy()
-    done = False
-    
-    while not done:
-        v1, v2 = nearest_pairs(arr,maxi,radius)
-        if overlap_size(v1) > 0:
-            neurons.append([])
-            for i in range(len(maxi)):
-                if v1[i] != -1:
-                    neurons[0].append(maxi[i].copy()) 
-                    maxi = np.delete(maxi,i, axis=0)
-                    i -= 1
-
-        else:
-            done = True
-    
-    return neurons
-
+ 
 def main():
     seg1 = napari_to_array("data/seg1_points.csv",1,1,4.8)
     seg2 = napari_to_array("data/seg2_points.csv",1,1,4.8)
     
-    print(all_pairing(seg1, seg2, 4.5))
     # label_local_max(seg1,seg2, 4.5, 'test')
     # print(two_segs(seg1, seg2, 2, "1", "2"))
 
@@ -375,11 +363,12 @@ def main():
     lindsey = np.concatenate((napari_to_array("data/lindsey_2P_mn_7_19_22.csv",1,1,4.8), napari_to_array("data/lindsey_2P_sn_7_19_22.csv",1,1,4.8)), axis=0)
     alex = napari_to_array("data/alex_2P_7_19_22.csv", 1,1,4.8)
     
-    # sl = union(suhan, lindsey, 6)
-    # sla = union(sl, alex, 4.5) # all 2P neurons annotated
+    sl = union(suhan, lindsey, 6)
+    sla = union(sl, alex, 4.5) # all 2P neurons annotated
     
-    # localMax = fiji_to_array("data/local_max/local_max_2P_prominence_8.csv", 1, 1, 4.8)
+    localMax = fiji_to_array("data/local_max/local_max_2P_prominence_8.csv", 1, 1, 4.8)
 
+    to_labeled_csv(all_pairing(sla, localMax, 5),"data/local_max_pairings.csv")
 
     # plot_prominence(sla)
     
