@@ -302,10 +302,12 @@ def test_comparison():
     print(nearest_pairs(arrOne, arrTwo,5) + "\n")
 
 def recursive_pairing(arr, maxes, radius):
+    # create a 1d array with indices from 1-maxes.len()
     neurons = []
     maxi = maxes.copy()
-
-    while (True):
+    done = False
+    
+    while not done:
         v1, v2 = nearest_pairs(arr,maxi,radius)
         if overlap_size(v1) > 0:
             neurons.append([])
@@ -314,8 +316,9 @@ def recursive_pairing(arr, maxes, radius):
                     neurons[0].append(maxi[i].copy()) 
                     maxi = np.delete(maxi,i, axis=0)
                     i -= 1
+
         else:
-            break
+            done = True
     
     return neurons
 
