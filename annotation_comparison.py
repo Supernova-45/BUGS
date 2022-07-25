@@ -343,6 +343,15 @@ def all_pairing(segs, maxes, radius):
                                 
     return labeledMaxi
  
+def split_by_label(arr):
+    labeled = [[] for i in range(10)]
+    
+    for i in range(len(arr)):
+        labeled[int(arr[i][3])].append(arr[i].tolist())
+        
+    return labeled
+        
+    
 def main():
     seg1 = napari_to_array("data/seg1_points.csv",1,1,4.8)
     seg2 = napari_to_array("data/seg2_points.csv",1,1,4.8)
@@ -368,8 +377,10 @@ def main():
     
     localMax = fiji_to_array("data/local_max/local_max_2P_prominence_8.csv", 1, 1, 4.8)
 
-    to_labeled_csv(all_pairing(sla, localMax, 5),"data/local_max_pairings.csv")
+    paired = all_pairing(sla, localMax, 5)
+    # to_labeled_csv(all_pairing(sla, localMax, 5),"data/local_max_pairings.csv")
 
+    print(split_by_label(paired))
     # plot_prominence(sla)
     
     # label_local_max(localMax,sla, 4.5, 'data/local_max/local_max_labeled.csv')
