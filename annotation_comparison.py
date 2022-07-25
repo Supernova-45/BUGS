@@ -301,8 +301,39 @@ def test_comparison():
     print("Nearest pairs within radius of 5:")
     print(nearest_pairs(arrOne, arrTwo,5) + "\n")
 
+def all_pairing(segs, maxes, radius):
+    # create a 1d array with indices from 1-maxes.len() 
+    # create a copy of maxes that you can add the labels to
+    # while not done, keep running the recursive pairing
+    # for each one delete the maxi that have beeen paired, and add their indices to some csv, then also delete  their indexes in the 1d arr
+    # the format for the maxi should be something along the lines of XYZ LABEL
+    indices = np.arange(0,len(maxes))
+    unpairedMaxi = maxes.copy()
+    zeroCol = np.zeros((len(maxes),1))
+    labeledMaxi = np.append(maxes,zeroCol,axis=1)
+    done = False
+    removed = 0;
+
+    while not done:
+        v1, v2 = nearest_pairs(segs,unpairedMaxi,radius)
+        if overlap_size(v2) != 0:
+            removed += 1
+            i = 0
+            while i < len(v2):
+                if v2[i] != -1:
+                    labeledMaxi[indices[i]][3] = removed
+                    unpairedMaxi = np.delete(unpairedMaxi,i,axis=0)
+                    indices = np.delete(indices,i)
+                    v2 = np.delete(v2,i,axis=0)
+                    i -= 1
+                
+                i += 1
+        else:
+            done = True
+                                
+    return labeledMaxi
+
 def recursive_pairing(arr, maxes, radius):
-    # create a 1d array with indices from 1-maxes.len()
     neurons = []
     maxi = maxes.copy()
     done = False
@@ -326,7 +357,7 @@ def main():
     seg1 = napari_to_array("data/seg1_points.csv",1,1,4.8)
     seg2 = napari_to_array("data/seg2_points.csv",1,1,4.8)
     
-    recursive_pairing(seg1, seg2, 4.5)
+    print(all_pairing(seg1, seg2, 4.5))
     # label_local_max(seg1,seg2, 4.5, 'test')
     # print(two_segs(seg1, seg2, 2, "1", "2"))
 
