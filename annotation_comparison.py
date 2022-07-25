@@ -302,11 +302,12 @@ def test_comparison():
     print(nearest_pairs(arrOne, arrTwo,5) + "\n")
 
 def all_pairing(segs, maxes, radius):
-    # create a 1d array with indices from 1-maxes.len() 
-    # create a copy of maxes that you can add the labels to
-    # while not done, keep running the recursive pairing
-    # for each one delete the maxi that have beeen paired, and add their indices to some csv, then also delete  their indexes in the 1d arr
-    # the format for the maxi should be something along the lines of XYZ LABEL
+    """
+    Iteratively finds all the pairs within a certain radius and labels them 
+    Input: segmenter array, max array, radius
+    Output: max array with each element labeled 1-n
+    """
+    
     indices = np.arange(0,len(maxes))
     unpairedMaxi = maxes.copy()
     zeroCol = np.zeros((len(maxes),1))
