@@ -22,13 +22,17 @@ class Cropper:
         self.shape_3d = np.array(shape)
         self.centroids = np.array(centroids)
 
-    def crop(self, crop_id, img):
+    def crop(self, img, crop_id = None):
         """
         img: 3D array , image from which to crop
         Returns
         imgs: array N_dim1_dim2 with image slices through the centroids or all zeros if crop was not successful
         is_cropped: crop status, 1 for 'cropped successfully', 0 if the center was too close to image border to crop
         """
+        if crop_id is None:
+            n_centroids = self.centroids.shape[0]
+            crop_id = np.arange(n_centroids)
+            
         imgs = np.zeros((len(crop_id), self.shape_3d[0], self.shape_3d[1], self.shape_3d[1]))
         is_cropped = np.ones((len(crop_id))).astype('bool')
 
@@ -81,7 +85,7 @@ class Slices(Cropper):
         """
         Returns 2d shape by dropping the 0 dimension.
         """
-        if np.sum(self.shape_3d == 0) == 1:
+        if np.sum(self.shape_3d == 1) == 1:
             return self.shape_3d[self.shape_3d != 0]
         else:
             return None
@@ -92,7 +96,7 @@ class Slices(Cropper):
         """
         # figure out slice orientation by looking at  what dimension is missing
         orient_list = ['yx', 'zx', 'zy']
-        is_0 = np.where(self.shape_3d == 0)[0][0]
+        is_0 = np.where(self.shape_3d == 1)[0][0]
         return orient_list[is_0]
 
     def flip(self, dim):
